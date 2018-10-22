@@ -10,6 +10,7 @@
 /ipch/
 UpgradeLog.htm
 *.aps
+*.exe
 *.idc
 *.ilk
 *.lastcodeanalysissucceeded
@@ -23,5 +24,6 @@ UpgradeLog.htm
 *.suo
 *.user
 *.db
+*.ncb
 gitver.h
 version.mk

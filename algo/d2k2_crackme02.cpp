@@ -8,8 +8,7 @@ void process_serial(char *name, char *serial_out)
 	int namelen = strlen(name);
 	for (int ctr=0; ctr <namelen;ctr++)
 	{
-		unsigned char letter = toupper(name[ctr]);
-		tabl[bufctr]=letter;
+		tabl[bufctr]=toupper(name[ctr]);
 		bufctr+=2;
 	}
 	wsprintf(serial_out,"%s", tabl);
