@@ -1,5 +1,17 @@
 #include <windows.h>
 
+/*
+This particular crackme uses Yoda's Protector for DRM. 
+You might need to use Scyllahide or x64dbg's Patch PEB
+functions.
+
+To unpack, load up crackme in x32dbg, place an 
+singleshot memory breakpoint on execution on the
+"code" PE section.
+
+Then use Scylla to rebuild imports, etc.
+*/
+
 void process_serial(char *name, char *serial_out)
 {
 	unsigned char buffer[32]={0};
@@ -15,10 +27,7 @@ void process_serial(char *name, char *serial_out)
 		ctr1 += tabl[ctr];
 	ctr1 *= (namelen * 0xFF);
 	ctr1 ^= 0xACEBDFAB;
-	ctr1 = ((ctr1>>24)&0xff) | 
-		((ctr1<<8)&0xff0000) | 
-		((ctr1>>8)&0xff00) | 
-		((ctr1<<24)&0xff000000);
+	ctr1 = _byteswap_ulong(ctr1);
 	wsprintf((char*)ctr1_buf,"%1X", ctr1);
 
 
