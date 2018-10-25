@@ -14,7 +14,7 @@ Then use Scylla to rebuild imports, etc.
 
 void process_serial(char *name, char *serial_out)
 {
-	unsigned char magic_buf[8]={0};
+	char magic_buf[10]={0};
 	char tabl[] = "SJKAZBVTECGIDFNG";
 	int namelen = strlen(name);
 	int ctr=0,bufctr=0,magic_dword = 0;
@@ -34,21 +34,25 @@ void process_serial(char *name, char *serial_out)
 	wsprintf((char*)magic_buf,"%1X", magic_dword);
 
 	ctr=0;
-	while (ctr != 8)
+	while (ctr < 8)
 	{
-		if(magic_buf[ctr] < 0x3A)
-			magic_buf[ctr] = (magic_buf[ctr]+ 0x11);
+		byte val = magic_buf[ctr];
+		if(val < 0x3A)
+			val+= 0x11;
+		magic_buf[ctr] = val;	
 		ctr++;
 	}
 
 	ctr=0;
 	bufctr=0;
-	while (bufctr != 0x10)
+	while (bufctr < 0x10)
 	{
-		tabl[bufctr+1]=magic_buf[ctr++]+5;
+		byte val = (magic_buf[ctr])+5;
+		tabl[bufctr+1]=val;
+		ctr++;
 		bufctr+=2;
 	}
-	wsprintf(serial_out,"%s", tabl);
+	wsprintf(serial_out,"%s", &tabl[0]);
 }
 
 

@@ -11,7 +11,7 @@ char *about   =
 ;
 
 #define MIN_NAME 1
-#define MAX_NAME 50
+#define MAX_NAME 8
 #define MAX_SERIAL 70
 #define BUTTON_COLOR			0x00000000
 #define BUTTON_TEXT_COLOR		0x00FFFFFF
@@ -94,8 +94,8 @@ static BOOL CALLBACK DialogFunc(HWND hwndDlg, UINT msg, WPARAM wParam, LPARAM lP
 	case WM_COMMAND:
 		switch (LOWORD(wParam)) {
 			case IDC_NAME:
-   				if(HIWORD(wParam)==EN_CHANGE)
-				GenerateSerial(hwndDlg);
+   				//if(HIWORD(wParam)==EN_CHANGE)
+				//GenerateSerial(hwndDlg);
 				break;
 			case IDC_GENERATE:
 				GenerateSerial(hwndDlg);
