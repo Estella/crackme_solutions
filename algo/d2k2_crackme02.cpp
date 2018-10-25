@@ -16,38 +16,39 @@ void process_serial(char *name, char *serial_out)
 {
 	unsigned char buffer[32]={0};
 	unsigned char ctr1_buf[8]={0};
-	char tabl[] = "SJKAZBVTECGIDFNG ";
+	char tabl[] = "SJKAZBVTECGIDFNG";
 	int namelen = strlen(name);
-	int ctr=0,bufctr=0;
-	for (ctr=0, bufctr=0; ctr <namelen;ctr++,bufctr+=2)
-		tabl[bufctr]=toupper(name[ctr]);
+	int ctr=0,bufctr=0,magic_dword = 0;
+	while(ctr != namelen)
+	{
+		tabl[bufctr]=toupper(name[ctr++]);
+		bufctr+=2;
+	}
 
-	int ctr1 = 0;
-	for (ctr=0; ctr <0x10;ctr++)
-		ctr1 += tabl[ctr];
-	ctr1 *= (namelen * 0xFF);
-	ctr1 ^= 0xACEBDFAB;
-	ctr1 = _byteswap_ulong(ctr1);
-	wsprintf((char*)ctr1_buf,"%1X", ctr1);
+    ctr=0;
+	while(ctr !=0x10)
+		magic_dword += tabl[ctr++];
+		
+	magic_dword *= (namelen * 0xFF);
+	magic_dword ^= 0xACEBDFAB;
+	magic_dword = _byteswap_ulong(magic_dword);
+	wsprintf((char*)ctr1_buf,"%1X", magic_dword);
 
-
-     ctr=0;
-     while (ctr != 8)
-     {
+    ctr=0;
+    while (ctr != 8)
+	{
 	  if(ctr1_buf[ctr] < 0x3A)
-		ctr1_buf[ctr] = ctr1_buf[ctr]+ 0x11;
+	    ctr1_buf[ctr] = (ctr1_buf[ctr]+ 0x11);
 	  ctr++;
-     }
+    }
 
-	 ctr=0;
-	 bufctr=0;
-	 while (bufctr != 0x10)
-	 {
-		 tabl[bufctr+1]=ctr1_buf[ctr]+5;
-		 bufctr+=2;
-		 ctr++;
-	 }
-
+	ctr=0;
+	bufctr=0;
+	while (bufctr != 0x10)
+	{
+	  tabl[bufctr+1]=ctr1_buf[ctr++]+5;
+	  bufctr+=2;
+	}
 	wsprintf(serial_out,"%s", tabl);
 }
 
