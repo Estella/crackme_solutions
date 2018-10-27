@@ -3,34 +3,26 @@
 void process_serial(char *name, char *serial_out)
 {
 	unsigned char buffer[32]={0};
-	byte bufctr=0;
-	byte ctr = 5;
 
-	while(ctr)
-	{
-		byte ascii_val = (name[bufctr] ^ 0x29) + ctr;
-		if(ascii_val < 'A' || ascii_val > 'Z')
-			ascii_val = 0x52 + ctr;
-        	buffer[bufctr]=ascii_val;
-		bufctr++;
-		ctr--;
-	}
-	bufctr = 0;
-	ctr = 5;
+    for (int i=5,j=0; i != 0; i--,j++)
+    {
+        byte ascii_val = (name[j] ^ 0x29) + i;
+        if (ascii_val < 'A' || ascii_val > 'Z')
+            ascii_val = 0x52 + i;
+        buffer[j] = ascii_val;
+    }
 
-	while(ctr)
-	{
-		byte ascii_val = (name[bufctr] ^ 0x27) + ctr;
-		ascii_val++;
-		if(ascii_val < 'A' || ascii_val > 'Z')
-			ascii_val = 0x4D + ctr;
-		buffer[bufctr+5]=ascii_val;
-		bufctr++;
-		ctr--;
-	}
-	ctr = 0;
+    for (int i = 5, j = 0; i != 0; i--, j++)
+    {
+        byte ascii_val = (name[j] ^ 0x27) + i;
+        ascii_val++;
+        if (ascii_val < 'A' || ascii_val > 'Z')
+            ascii_val = 0x4D + i;
+        buffer[j + 5] = ascii_val;
+    }
 
-	while(1)
+    int ctr = 0;
+	do
 	{
 		byte gen=(buffer[ctr]) + 5;
 		if(gen>'Z')gen -=0xD;
@@ -41,8 +33,8 @@ void process_serial(char *name, char *serial_out)
 			gen=0x4B - ctr;
 		buffer[ctr]=gen;
 		ctr++;
-		if(!buffer[ctr])break;	
-	}
+    } while (buffer[ctr]);
+
 	wsprintf(serial_out,"%s", buffer);
 }
 

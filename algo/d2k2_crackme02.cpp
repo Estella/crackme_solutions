@@ -17,41 +17,33 @@ void process_serial(char *name, char *serial_out)
 	char magic_buf[10]={0};
 	char tabl[] = "SJKAZBVTECGIDFNG";
 	int namelen = strlen(name);
-	int ctr=0,bufctr=0,magic_dword = 0;
-	while(ctr != namelen)
-	{
-		tabl[bufctr]=toupper(name[ctr++]);
-		bufctr+=2;
-	}
+	int magic_dword = 0;
 
-	ctr=0;
-	while(ctr !=0x10)
-		magic_dword += tabl[ctr++];
+	for (int i=0,j=0; i < namelen;i++,j+=2)
+		tabl[j]=toupper(name[i]);
+
+    for (int i=0;i!=0x10;i++)
+		magic_dword += tabl[i];
 
 	magic_dword *= (namelen * 0xFF);
 	magic_dword ^= 0xACEBDFAB;
 	magic_dword = _byteswap_ulong(magic_dword);
 	wsprintf((char*)magic_buf,"%1X", magic_dword);
 
-	ctr=0;
-	while (ctr < 8)
+	for (int i = 0; i < 8 ; i++)
 	{
-		byte val = magic_buf[ctr];
+		byte val = magic_buf[i];
 		if(val < 0x3A)
 			val+= 0x11;
-		magic_buf[ctr] = val;	
-		ctr++;
+		magic_buf[i] = val;	
 	}
 
-	ctr=0;
-	bufctr=0;
-	while (bufctr < 0x10)
-	{
-		byte val = (magic_buf[ctr])+5;
-		tabl[bufctr+1]=val;
-		ctr++;
-		bufctr+=2;
-	}
+    for (int i = 0, j = 0; i < 0x10; i += 2, j++)
+    {
+        byte val = (magic_buf[j]) + 5;
+        tabl[i + 1] = val;
+    }
+
 	wsprintf(serial_out,"%s", &tabl[0]);
 }
 
