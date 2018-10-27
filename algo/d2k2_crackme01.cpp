@@ -2,9 +2,9 @@
 
 void process_serial(char *name, char *serial_out)
 {
-	unsigned char buffer[32]={0};
+    unsigned char buffer[32] = { 0 };
 
-    for (int i=5,j=0; i != 0; i--,j++)
+    for (int i = 5, j = 0; i != 0; i--, j++)
     {
         byte ascii_val = (name[j] ^ 0x29) + i;
         if (ascii_val < 'A' || ascii_val > 'Z')
@@ -22,20 +22,20 @@ void process_serial(char *name, char *serial_out)
     }
 
     int ctr = 0;
-	do
-	{
-		byte gen=(buffer[ctr]) + 5;
-		if(gen>'Z')gen -=0xD;
-		gen^=0xC;
-		if(gen<'A')
-			gen=0x4B + ctr;
-		if(gen>'Z')
-			gen=0x4B - ctr;
-		buffer[ctr]=gen;
-		ctr++;
+    do
+    {
+        byte gen = (buffer[ctr]) + 5;
+        if (gen > 'Z')gen -= 0xD;
+        gen ^= 0xC;
+        if (gen < 'A')
+            gen = 0x4B + ctr;
+        if (gen > 'Z')
+            gen = 0x4B - ctr;
+        buffer[ctr] = gen;
+        ctr++;
     } while (buffer[ctr]);
 
-	wsprintf(serial_out,"%s", buffer);
+    wsprintf(serial_out, "%s", buffer);
 }
 
 
