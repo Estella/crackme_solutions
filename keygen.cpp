@@ -94,10 +94,6 @@ static BOOL CALLBACK DialogFunc(HWND hwndDlg, UINT msg, WPARAM wParam, LPARAM lP
 	break;
 	case WM_COMMAND:
 		switch (LOWORD(wParam)) {
-			case IDC_NAME:
-   				if(HIWORD(wParam)==EN_CHANGE)
-				GenerateSerial(hwndDlg);
-				break;
 			case IDC_GENERATE:
 				GenerateSerial(hwndDlg);
 				break;
