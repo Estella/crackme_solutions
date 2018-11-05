@@ -89,6 +89,7 @@ static BOOL CALLBACK DialogFunc(HWND hwndDlg, UINT msg, WPARAM wParam, LPARAM lP
 	c_MakeOwnerDraw(hwndDlg,IDC_GENERATE);
 	c_MakeOwnerDraw(hwndDlg,IDC_ABOUT);
 	c_MakeOwnerDraw(hwndDlg,IDC_EXIT);
+    srand(GetTickCount());
 	return TRUE;
 	break;
 	case WM_COMMAND:
