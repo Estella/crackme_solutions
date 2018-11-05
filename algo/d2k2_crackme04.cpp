@@ -46,7 +46,7 @@ void process_serial(char *name, char *serial_out)
         }
     }
     fclose(pFile);
-    wsprintf((char*)serial_out, "Serials listed in 'keys.txt'!");
+    wsprintf((char*)serial_out, "Serials listed in \"keys.txt\"!");
 }
 
 
