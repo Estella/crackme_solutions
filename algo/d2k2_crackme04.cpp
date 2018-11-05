@@ -7,27 +7,26 @@ void process_serial(char *name, char *serial_out)
     bool done = false;
     int num_ser = 0;
     FILE  * pFile = fopen("keys.txt", "w");
+    BYTE *ser_ptr = serial_buf;
     while (!done)
     {
         //the bruteforce
-        BYTE *ser_ptr = serial_buf;
-    next:
         (*ser_ptr)++;
         if (*ser_ptr == '[')
         {
             //limit range to usable ASCII keyspace
-            *ser_ptr = '#';
-            ser_ptr++;
+            *ser_ptr++ = '#';
             if (*ser_ptr == 0)
             {
                 fclose(pFile);
                 wsprintf((char*)serial_out, "Nothing found.");
                 return;
             }
-            else goto next;
+            else continue;
         }
         else
         {
+            if (*ser_ptr > '#')ser_ptr = serial_buf;
             int regconst = 0;
             //const calc
             for (int i = 7; i >= 0; --i)
@@ -42,7 +41,6 @@ void process_serial(char *name, char *serial_out)
                 num_ser++;
             }
             if (num_ser == 6)done = true;
-
         }
     }
     fclose(pFile);
