@@ -26,7 +26,7 @@ void process_serial(char *name, char *serial_out)
         }
         else
         {
-            if (*ser_ptr > '#')ser_ptr = serial_buf;
+            ser_ptr = serial_buf;
             int regconst = 0;
             //const calc
             for (int i = 7; i >= 0; --i)
