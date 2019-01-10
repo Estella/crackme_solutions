@@ -1,8 +1,11 @@
 #include <windows.h>
-#define setlobyte(val, b)val = (DWORD(val) & 0xFFFFFF00) | (DWORD(b) & 0xFF)
+extern void d2dk_crackme05_hash(DWORD*, DWORD, DWORD*);
+
 void process_serial(char *name, char *serial_out)
 {
 	unsigned char buffer_4034AB[32] = { 0 };
+	unsigned char buffer_hashbuf[64] = { 0 };
+	DWORD* hashbuf_ptr = (DWORD*)buffer_hashbuf;
 	memcpy(buffer_4034AB, name, strlen(name));
 	int namelen = strlen(name);
 	
@@ -21,8 +24,7 @@ void process_serial(char *name, char *serial_out)
 	eax = namelen;
 	int ebx = 0x10101010;
 hashloop:
-	eax = namelen;
-	setlobyte(ebx, buffer_4034AB[ecx]);
+	(((BYTE *)&ebx)[0]) = buffer_4034AB[ecx];
 	ebx <<= 5;
 	edx = 0x68F6B76C;
 	edx *= eax;
@@ -31,7 +33,7 @@ hashloop:
 	edx += *(DWORD *)buffer_4034AB;
 	*(DWORD *)buffer_4034AB = edx;
 	//call hash function
-
-
+	d2dk_crackme05_hash((DWORD*)buffer_4034AB, namelen, hashbuf_ptr);
+	//multiply(3, 12);
 	wsprintf(serial_out, "%s", name);
 }

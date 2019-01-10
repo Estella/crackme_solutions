@@ -4,7 +4,7 @@
 #include "ft2play.c"
 #include "dlg_colors.c"
 static BOOL CALLBACK DialogFunc(HWND hwndDlg, UINT msg, WPARAM wParam, LPARAM lParam);
-void process_serial(char *name, char *serial);
+extern "C" void process_serial(char *name, char *serial);
 char *about   =
 "Crackme solution\n"
 "keygenned by mudlord\n"
