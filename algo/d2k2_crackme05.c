@@ -1,5 +1,5 @@
 #include <windows.h>
-extern void d2dk_crackme05_hash(DWORD*, DWORD, DWORD*);
+extern void d2dk_crackme05_hash(DWORD*, DWORD, BYTE*);
 
 void process_serial(char *name, char *serial_out)
 {
@@ -34,6 +34,7 @@ hashloop:
 	*(DWORD *)buffer_4034AB = edx;
 	//call hash function
 	d2dk_crackme05_hash((DWORD*)buffer_4034AB, namelen, hashbuf_ptr);
-	//multiply(3, 12);
+	DWORD *ptr = (BYTE*)hashbuf_ptr + 6;
+	ebx = (*ptr);
 	wsprintf(serial_out, "%s", name);
 }
