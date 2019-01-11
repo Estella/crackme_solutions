@@ -34,7 +34,10 @@ hashloop:
 	*(DWORD *)buffer_4034AB = edx;
 	//call hash function
 	d2dk_crackme05_hash((DWORD*)buffer_4034AB, namelen, hashbuf_ptr);
-	DWORD *ptr = (BYTE*)hashbuf_ptr + 6;
-	ebx = (*ptr);
+	((BYTE *)hashbuf_ptr) += 6;
+	ebx = (*hashbuf_ptr);
+	edx ^= ebx;
+	edx = _rotl(edx, 7);
+	d2dk_crackme05_hash((DWORD*)buffer_4034AB, namelen, hashbuf_ptr);
 	wsprintf(serial_out, "%s", name);
 }
