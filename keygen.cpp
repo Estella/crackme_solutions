@@ -38,15 +38,15 @@ int APIENTRY WinMain(HINSTANCE hinst, HINSTANCE hinstPrev, LPSTR lpCmdLine, int 
 
 DWORD WINAPI GenerateSerial(HWND hwnd){
     unsigned char name[MAX_NAME]={0};
-	char serial[MAX_SERIAL]={0};
+	unsigned char serial[MAX_SERIAL]={0};
     
 	if(GetDlgItemText(hwnd,IDC_NAME,(char*)name,MAX_NAME)<MIN_NAME)
 	{
 		SetDlgItemText(hwnd, IDC_SERIAL,"Please enter a longer name...");
 		return 1;
 	}
-	process_serial((char*)name, serial);
-	SetDlgItemText(hwnd, IDC_SERIAL,serial);
+	process_serial((char*)name, (char*)serial);
+	SetDlgItemText(hwnd, IDC_SERIAL, (char*)serial);
     return 0;
 }
 
