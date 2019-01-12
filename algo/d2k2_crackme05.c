@@ -40,7 +40,7 @@ void process_serial(char *name, char *serial_out)
 	int edx;
 	int eax = namelen;
 	int ebx = 0x10101010;
-	for(int counter = 0; counter < namelen;counter++)
+	for(int counter = 0; counter != namelen;counter++)
 	{
 		ebx = ((DWORD)ebx & 0xFFFFFF00) | (DWORD)buffer_4034AB[counter] & 0xFF;
 		ebx <<= 5;
@@ -71,6 +71,8 @@ void process_serial(char *name, char *serial_out)
 		buffer_4034AB[counter] = LOBYTE(edx);
 		d2dk_crackme05_hash((DWORD*)buffer_4034AB, namelen, hashbuf_ptr);
 		ebx = 0x10101010;
+		//debug print
+		hexprint(buffer_hashbuf, 16, hash_formatted);
 	}
 	hexprint(buffer_hashbuf, 16, hash_formatted);
 	wsprintf(serial_out, "%s", hash_formatted);
