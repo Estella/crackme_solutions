@@ -1,6 +1,5 @@
 #include <windows.h>
-extern void d2dk_crackme05_hash(DWORD*, DWORD, BYTE*);
-
+extern void _stdcall d2dk_crackme05_hash(DWORD*, DWORD, DWORD*);
 void process_serial(char *name, char *serial_out)
 {
 	unsigned char buffer_4034AB[32] = { 0 };
@@ -23,11 +22,10 @@ void process_serial(char *name, char *serial_out)
 	int edx;
 	int eax = namelen;
 	int ebx = 0x10101010;
-	int ecx = 0;
-
-	while (ecx != namelen)
+	for(int counter = 0; counter < namelen;counter++)
 	{
-		(((BYTE *)&ebx)[0]) = buffer_4034AB[ecx];
+		ebx = 0x10101010;
+		ebx = ((DWORD)ebx & 0xFFFFFF00) | (DWORD)buffer_4034AB[counter] & 0xFF;
 		ebx <<= 5;
 		edx = 0x68F6B76C;
 		edx *= eax;
@@ -46,17 +44,16 @@ void process_serial(char *name, char *serial_out)
 		hashbuf_ptr_b += 8;
 		ebx = *(DWORD*)hashbuf_ptr_b;
 		edx ^= ebx;
-		buffer_4034AB[ecx] = (((BYTE *)&ebx)[0]);
+		buffer_4034AB[counter] = LOBYTE(ebx);
 		d2dk_crackme05_hash((DWORD*)buffer_4034AB, namelen, hashbuf_ptr);
 		hashbuf_ptr_b = (char*)hashbuf_ptr;
 		hashbuf_ptr_b += 10;
 		ebx = *(DWORD*)hashbuf_ptr_b;
 		edx ^= ebx;
 		edx = _rotl(edx, 4);
-		buffer_4034AB[ecx] = (((BYTE *)&edx)[0]);
+		buffer_4034AB[counter] = LOBYTE(edx);
 		d2dk_crackme05_hash((DWORD*)buffer_4034AB, namelen, hashbuf_ptr);
-		ebx = 0x10101010;
-		ecx++;
+		
 	}
 	wsprintf(serial_out, "%s", name);
 }

@@ -1,5 +1,5 @@
 .686p
-.model flat, c
+.model flat, stdcall
 option casemap:none
 
 .code
@@ -9,10 +9,8 @@ option epilogue:none
 
 ; Start of selected range: 0x00401000
 
-PUBLIC d2dk_crackme05_hash
 
-d2dk_crackme05_hash PROC
-
+d2dk_crackme05_hash PROC x:DWORD,y:DWORD,z:DWORD
 push ebp
 mov ebp,esp
 add esp,0FFFFFFF0h

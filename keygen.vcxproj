@@ -63,7 +63,8 @@
       <ObjectFileName>.\Release/</ObjectFileName>
       <ProgramDataBaseFileName>.\Release/</ProgramDataBaseFileName>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <AdditionalOptions> </AdditionalOptions>
+      <AdditionalOptions>
+      </AdditionalOptions>
       <CallingConvention>Cdecl</CallingConvention>
     </ClCompile>
     <Link>
@@ -153,6 +154,11 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
       <GeneratePreprocessedSourceListing Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</GeneratePreprocessedSourceListing>
       <MakeAllSymbolsPublic Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</MakeAllSymbolsPublic>
+      <PreserveIdentifierCase Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">0</PreserveIdentifierCase>
+      <CallingConvention Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">2</CallingConvention>
+      <MakeAllSymbolsPublic Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</MakeAllSymbolsPublic>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/coff %(AdditionalOptions)</AdditionalOptions>
+      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">1</WarningLevel>
     </MASM>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
