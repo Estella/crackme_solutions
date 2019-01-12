@@ -1,6 +1,5 @@
 #include <windows.h>
-extern void _stdcall d2dk_crackme05_hash(DWORD*, DWORD, DWORD*);
-
+extern void _stdcall d2k2_crackme05_hash(DWORD* input, DWORD input_len, DWORD* output);
 
 void hexprint(unsigned char* pin,int buflength,unsigned char* str)
 {
@@ -18,60 +17,54 @@ void hexprint(unsigned char* pin,int buflength,unsigned char* str)
 
 void process_serial(char *name, char *serial_out)
 {
-	unsigned char buffer_4034AB[32] = { 0 };
-	unsigned char buffer_hashbuf[64] = { 0 };
-	unsigned char hash_formatted[64] = { 0 };
-	DWORD* hashbuf_ptr = (DWORD*)buffer_hashbuf;
+	unsigned char hashinp[32] = { 0 };
+	unsigned char d2k2_hashout[64] = { 0 };
+	unsigned char d2k2hash_formatted[64] = { 0 };
+	DWORD* hashbuf_ptr = (DWORD*)d2k2_hashout;
 	
-	memcpy(buffer_4034AB, name, strlen(name));
+	memcpy(hashinp, name, strlen(name));
 	int namelen = strlen(name);
-	int ctr = 0;
-	for (ctr;ctr < namelen; ctr++)
+	
+	for (int ctr = 0;ctr < namelen; ctr++)
 	{
-		int letter = buffer_4034AB[ctr] + namelen;
-		int letter_xor = *(DWORD *)buffer_4034AB;
+		int letter = hashinp[ctr] + namelen;
+		int letter_xor = *(DWORD *)hashinp;
 		letter_xor ^= letter;
-		buffer_4034AB[ctr] = (BYTE)letter_xor;
+		hashinp[ctr] = (BYTE)letter_xor;
 	}
 	
-	ctr = 0;
-	while (ctr != namelen)
+	for (int ctr = 0; ctr != namelen; ctr++)
 	{
 		BYTE *hashbuf_ptr_b = (BYTE*)hashbuf_ptr;
-		int ebx = 0x10101010;
-		int edx = 0x68F6B76C;
-		ebx = ((DWORD)ebx & 0xFFFFFF00) | (DWORD)buffer_4034AB[ctr] & 0xFF;
-		ebx <<= 5;
-		edx *= namelen;
-		ebx *= namelen;
-		edx ^= ebx;
-		edx += *(DWORD *)buffer_4034AB;
-		*(DWORD *)buffer_4034AB = edx;
+		int magic1 = 0x10101010;
+		int magic2 = 0x68F6B76C;
+		magic1 = ((DWORD)magic1 & 0xFFFFFF00) | (DWORD)hashinp[ctr] & 0xFF;
+		magic1 <<= 5;
+		magic2 *= namelen;
+		magic1 *= namelen;
+		magic2 ^= magic1;
+		magic2 += *(DWORD *)hashinp;
+		*(DWORD *)hashinp = magic2;
 		//call hash function
-		d2dk_crackme05_hash((DWORD*)buffer_4034AB, namelen, hashbuf_ptr);
-		hexprint(buffer_hashbuf, 16, hash_formatted);
+		d2k2_crackme05_hash((DWORD*)hashinp, namelen, hashbuf_ptr);
 		hashbuf_ptr_b += 6;
-		ebx = *(DWORD*)hashbuf_ptr_b;
-		edx ^= ebx;
-		edx = _rotl(edx, 7);
+		magic1 = *(DWORD*)hashbuf_ptr_b;
+		magic2 ^= magic1;
+		magic2 = _rotl(magic2, 7);
 		hashbuf_ptr_b = (char*)hashbuf_ptr;
 		hashbuf_ptr_b += 8;
-		ebx = *(DWORD*)hashbuf_ptr_b;
-		edx ^= ebx;
-		buffer_4034AB[ctr] = LOBYTE(edx);
-		d2dk_crackme05_hash((DWORD*)buffer_4034AB, namelen, hashbuf_ptr);
-		hexprint(buffer_hashbuf, 16, hash_formatted);
+		magic1 = *(DWORD*)hashbuf_ptr_b;
+		magic2 ^= magic1;
+		hashinp[ctr] = LOBYTE(magic2);
+		d2k2_crackme05_hash((DWORD*)hashinp, namelen, hashbuf_ptr);
 		hashbuf_ptr_b = (char*)hashbuf_ptr;
 		hashbuf_ptr_b += 10;
-		ebx = *(DWORD*)hashbuf_ptr_b;
-		edx ^= ebx;
-		edx = _rotl(edx, 4);
-		buffer_4034AB[ctr] = LOBYTE(edx);
-		d2dk_crackme05_hash((DWORD*)buffer_4034AB, namelen, hashbuf_ptr);
-		//debug print
-		hexprint(buffer_hashbuf, 16, hash_formatted);
-		ctr++;
+		magic1 = *(DWORD*)hashbuf_ptr_b;
+		magic2 ^= magic1;
+		magic2 = _rotl(magic2, 4);
+		hashinp[ctr] = LOBYTE(magic2);
+		d2k2_crackme05_hash((DWORD*)hashinp, namelen, hashbuf_ptr);
 	}
-	hexprint(buffer_hashbuf, 16, hash_formatted);
-	wsprintf(serial_out, "%s", hash_formatted);
+	hexprint(d2k2_hashout, 16, d2k2hash_formatted);
+	wsprintf(serial_out, "%s", d2k2hash_formatted);
 }

@@ -10,7 +10,7 @@ option epilogue:none
 ; Start of selected range: 0x00401000
 
 
-d2dk_crackme05_hash PROC x:DWORD,y:DWORD,z:DWORD
+d2k2_crackme05_hash PROC x:DWORD,y:DWORD,z:DWORD
 push ebp
 mov ebp,esp
 add esp,0FFFFFFF0h
@@ -941,7 +941,7 @@ pop eax
 leave 
 ret 0Ch
 ; Finish of selected range: 0x004019E3
-d2dk_crackme05_hash ENDP
+d2k2_crackme05_hash ENDP
 
 END
 ; Finish of selected range: 0x004019E3
