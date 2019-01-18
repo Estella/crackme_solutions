@@ -1,7 +1,7 @@
 #include <windows.h>
 extern void _stdcall d2k2_crackme05_hash(DWORD* input, DWORD input_len, DWORD* output);
 
-void hexprint(unsigned char* pin,int buflength,unsigned char* str)
+void hexprint(unsigned char* pin, int buflength, unsigned char* str)
 {
 	const char * hex = "0123456789ABCDEF";
 	char * pout = str;
@@ -15,15 +15,16 @@ void hexprint(unsigned char* pin,int buflength,unsigned char* str)
 	*pout = 0;
 }
 
+#define BUFFER_SIZE 0x40
 void process_serial(char *name, char *serial_out)
 {
-	unsigned char hashinp[32] = { 0 };
-	unsigned char d2k2_hashout[64] = { 0 };
-	unsigned char d2k2hash_formatted[70] = { 0 };
+	unsigned char hashinp[BUFFER_SIZE] = { 0 };
+	unsigned char d2k2_hashout[BUFFER_SIZE] = { 0 };
+	unsigned char d2k2hash_formatted[BUFFER_SIZE] = { 0 };
+	unsigned char d2k2hash_formatted2[BUFFER_SIZE] = { 0 };
 	DWORD* hashbuf_ptr = (DWORD*)d2k2_hashout;
-
-	memcpy(hashinp, name, strlen(name));
 	int namelen = strlen(name);
+	lstrcpy(hashinp, name);
 
 	for (int ctr = 0; ctr < namelen; ctr++)
 	{
@@ -33,10 +34,9 @@ void process_serial(char *name, char *serial_out)
 		hashinp[ctr] = (BYTE)letter_xor;
 	}
 
-	
 	for (int ctr = 0; ctr != namelen; ctr++)
 	{
-		BYTE *hashbuf_ptr_b = (BYTE*)hashbuf_ptr;
+		BYTE *hashbuf_ptr_b = (BYTE*)d2k2_hashout;
 		int magic1 = 0x10101010;
 		int magic2 = 0x68F6B76C;
 		magic1 = ((DWORD)magic1 & 0xFFFFFF00) | (DWORD)hashinp[ctr] & 0xFF;
@@ -46,7 +46,7 @@ void process_serial(char *name, char *serial_out)
 		magic2 ^= magic1;
 		magic2 += *(DWORD *)hashinp;
 		*(DWORD *)hashinp = magic2;
-		d2k2_crackme05_hash((DWORD*)hashinp, namelen, hashbuf_ptr);
+		d2k2_crackme05_hash(hashinp, namelen, d2k2_hashout);
 		hashbuf_ptr_b += 6;
 		magic1 = *(DWORD*)hashbuf_ptr_b;
 		magic2 ^= magic1;
@@ -56,15 +56,16 @@ void process_serial(char *name, char *serial_out)
 		magic1 = *(DWORD*)hashbuf_ptr_b;
 		magic2 ^= magic1;
 		hashinp[ctr] = LOBYTE(magic2);
-		d2k2_crackme05_hash((DWORD*)hashinp, namelen, hashbuf_ptr);
+		d2k2_crackme05_hash(hashinp, namelen, d2k2_hashout);
 		hashbuf_ptr_b = (char*)hashbuf_ptr;
 		hashbuf_ptr_b += 10;
 		magic1 = *(DWORD*)hashbuf_ptr_b;
 		magic2 ^= magic1;
 		magic2 = _rotl(magic2, 4);
 		hashinp[ctr] = LOBYTE(magic2);
-		d2k2_crackme05_hash((DWORD*)hashinp, namelen, hashbuf_ptr);
+		d2k2_crackme05_hash(hashinp, namelen, d2k2_hashout);
 	}
+
 	for (int i = 0; i < 4; i++)
 	{
 		unsigned char text[9] = { 0 };
