@@ -85,7 +85,7 @@ static BOOL CALLBACK DialogFunc(HWND hwndDlg, UINT msg, WPARAM wParam, LPARAM lP
 		loadmusic(0);
 		SetWindowText(hwndDlg, keygen_name);
 		SetDlgItemText(hwndDlg, IDC_NAME, default_name);
-		//GenerateSerial(hwndDlg);
+		GenerateSerial(hwndDlg);
 		c_MakeOwnerDraw(hwndDlg, IDC_GENERATE);
 		c_MakeOwnerDraw(hwndDlg, IDC_ABOUT);
 		c_MakeOwnerDraw(hwndDlg, IDC_EXIT);
