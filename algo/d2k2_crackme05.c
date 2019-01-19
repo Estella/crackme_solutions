@@ -21,7 +21,6 @@ void process_serial(char *name, char *serial_out)
 	unsigned char hashinp[BUFFER_SIZE] = { 0 };
 	unsigned char d2k2_hashout[BUFFER_SIZE] = { 0 };
 	unsigned char d2k2hash_formatted[BUFFER_SIZE] = { 0 };
-	unsigned char d2k2hash_formatted2[BUFFER_SIZE] = { 0 };
 	DWORD* hashbuf_ptr = (DWORD*)d2k2_hashout;
 	int namelen = strlen(name);
 	lstrcpy(hashinp, name);
@@ -29,8 +28,7 @@ void process_serial(char *name, char *serial_out)
 	for (int ctr = 0; ctr < namelen; ctr++)
 	{
 		int letter = hashinp[ctr] + namelen;
-		int letter_xor = *(DWORD *)hashinp;
-		letter_xor ^= letter;
+		int letter_xor = (*(DWORD *)hashinp) ^ letter;
 		hashinp[ctr] = (BYTE)letter_xor;
 	}
 
@@ -39,10 +37,9 @@ void process_serial(char *name, char *serial_out)
 		BYTE *hashbuf_ptr_b = (BYTE*)d2k2_hashout;
 		int magic1 = 0x10101010;
 		int magic2 = 0x68F6B76C;
-		magic1 = ((DWORD)magic1 & 0xFFFFFF00) | (DWORD)hashinp[ctr] & 0xFF;
-		magic1 <<= 5;
-		magic2 *= namelen;
+		magic1 = (((DWORD)magic1 & 0xFFFFFF00) | (DWORD)hashinp[ctr] & 0xFF) << 5;
 		magic1 *= namelen;
+		magic2 *= namelen;
 		magic2 ^= magic1;
 		magic2 += *(DWORD *)hashinp;
 		*(DWORD *)hashinp = magic2;
@@ -69,27 +66,21 @@ void process_serial(char *name, char *serial_out)
 	for (int i = 0; i < 4; i++)
 	{
 		unsigned char text[9] = { 0 };
-		DWORD val = ((DWORD *)hashbuf_ptr[i]);
-		wsprintf(text, "%1X", val);
+		wsprintf(text, "%1X", ((DWORD *)hashbuf_ptr[i]));
 		strcat(d2k2hash_formatted, text);
 	}
-	int eax;
 	int ebx = 0x10101010;
 	int edx = 9;
 	for (int i = 0; i < 0x20; i++)
 	{
 		ebx = ((DWORD)ebx & 0xFFFFFF00) | (DWORD)d2k2hash_formatted[i] & 0xFF;
 		ebx = _rotl(ebx, 0x10);
-		ebx = _byteswap_ulong(ebx);
-		ebx += 0x1A2B3C4D;
-		ebx = _byteswap_ulong(ebx);
-		ebx ^= edx;
-		eax = ebx;
-		if (eax >= 0)edx = 0;
-		else edx = 0xFFFFFFFF;
+		ebx = _byteswap_ulong(ebx) + 0x1A2B3C4D;
+		ebx = _byteswap_ulong(ebx) ^ edx;
+		int eax = ebx;
+		edx = (eax >= 0) ? 0 : 0xFFFFFFFF;
 		ebx = 0x19;
-		edx = eax % ebx;
-		edx += 0x41;
+		edx = (eax % ebx) + 0x41;
 		d2k2hash_formatted[i] = edx;
 	}
 	wsprintf(serial_out, "%s", d2k2hash_formatted);
