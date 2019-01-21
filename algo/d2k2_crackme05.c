@@ -1,20 +1,6 @@
 #include <windows.h>
 extern void _stdcall d2k2_crackme05_hash(DWORD* input, DWORD input_len, DWORD* output);
 
-void hexprint(unsigned char* pin, int buflength, unsigned char* str)
-{
-	const char * hex = "0123456789ABCDEF";
-	char * pout = str;
-	int i = 0;
-	for (; i < buflength - 1; ++i) {
-		*pout++ = hex[(*pin >> 4) & 0xF];
-		*pout++ = hex[(*pin++) & 0xF];
-	}
-	*pout++ = hex[(*pin >> 4) & 0xF];
-	*pout++ = hex[(*pin) & 0xF];
-	*pout = 0;
-}
-
 #define BUFFER_SIZE 0x40
 void process_serial(char *name, char *serial_out)
 {
@@ -28,8 +14,7 @@ void process_serial(char *name, char *serial_out)
 	for (int ctr = 0; ctr < namelen; ctr++)
 	{
 		int letter = hashinp[ctr] + namelen;
-		int letter_xor = (*(DWORD *)hashinp) ^ letter;
-		hashinp[ctr] = (BYTE)letter_xor;
+		hashinp[ctr] = LOBYTE(*(DWORD *)hashinp ^ letter);
 	}
 
 	for (int ctr = 0; ctr != namelen; ctr++)
