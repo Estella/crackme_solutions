@@ -12,10 +12,7 @@ void process_serial(char *name, char *serial_out)
 	lstrcpy(hashinp, name);
 
 	for (int ctr = 0; ctr < namelen; ctr++)
-	{
-		int letter = hashinp[ctr] + namelen;
-		hashinp[ctr] = LOBYTE(*(DWORD *)hashinp ^ letter);
-	}
+		hashinp[ctr] = LOBYTE(*(DWORD *)hashinp ^ (hashinp[ctr] + namelen));
 
 	for (int ctr = 0; ctr != namelen; ctr++)
 	{
