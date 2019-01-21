@@ -17,12 +17,8 @@ void process_serial(char *name, char *serial_out)
 	for (int ctr = 0; ctr != namelen; ctr++)
 	{
 		BYTE *hashbuf_ptr_b = (BYTE*)d2k2_hashout;
-		int magic1 = 0x10101010;
-		int magic2 = 0x68F6B76C;
-		magic1 = (((DWORD)magic1 & 0xFFFFFF00) | (DWORD)hashinp[ctr] & 0xFF) << 5;
-		magic1 *= namelen;
-		magic2 *= namelen;
-		magic2 ^= magic1;
+		int magic1 = ((((DWORD)0x10101010 & 0xFFFFFF00) | (DWORD)hashinp[ctr] & 0xFF) << 5) * namelen;
+		int magic2 = (0x68F6B76C * namelen) ^ magic1;
 		magic2 += *(DWORD *)hashinp;
 		*(DWORD *)hashinp = magic2;
 		d2k2_crackme05_hash(hashinp, namelen, d2k2_hashout);
