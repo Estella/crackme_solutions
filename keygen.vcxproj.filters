@@ -7,7 +7,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="keygen.cpp" />
-    <ClCompile Include="algo\d2k2_crackme05.c">
+    <ClCompile Include="algo\d2k2_crackme06.c">
       <Filter>Algorithm</Filter>
     </ClCompile>
   </ItemGroup>
@@ -24,7 +24,7 @@
     <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
-    <MASM Include="algo\d2k2_crackme05_hash.asm">
+    <MASM Include="algo\d2k2_crackme06_hash.asm">
       <Filter>Algorithm</Filter>
     </MASM>
   </ItemGroup>

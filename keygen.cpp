@@ -82,6 +82,7 @@ static BOOL CALLBACK DialogFunc(HWND hwndDlg, UINT msg, WPARAM wParam, LPARAM lP
 	char *data;
 	switch (msg) {
 	case WM_INITDIALOG:
+		srand(GetTickCount());
 		loadmusic(0);
 		SetWindowText(hwndDlg, keygen_name);
 		SetDlgItemText(hwndDlg, IDC_NAME, default_name);
@@ -89,7 +90,7 @@ static BOOL CALLBACK DialogFunc(HWND hwndDlg, UINT msg, WPARAM wParam, LPARAM lP
 		c_MakeOwnerDraw(hwndDlg, IDC_GENERATE);
 		c_MakeOwnerDraw(hwndDlg, IDC_ABOUT);
 		c_MakeOwnerDraw(hwndDlg, IDC_EXIT);
-		srand(GetTickCount());
+
 		return TRUE;
 		break;
 	case WM_COMMAND:

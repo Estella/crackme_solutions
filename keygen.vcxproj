@@ -133,7 +133,7 @@
     </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="algo\d2k2_crackme05.c" />
+    <ClCompile Include="algo\d2k2_crackme06.c" />
     <ClCompile Include="keygen.cpp">
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Disabled</Optimization>
       <BasicRuntimeChecks Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">EnableFastChecks</BasicRuntimeChecks>
@@ -153,15 +153,12 @@
     <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
-    <MASM Include="algo\d2k2_crackme05_hash.asm">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
-      <GeneratePreprocessedSourceListing Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</GeneratePreprocessedSourceListing>
-      <MakeAllSymbolsPublic Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</MakeAllSymbolsPublic>
-      <PreserveIdentifierCase Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">0</PreserveIdentifierCase>
-      <CallingConvention Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">2</CallingConvention>
-      <MakeAllSymbolsPublic Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</MakeAllSymbolsPublic>
-      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/coff %(AdditionalOptions)</AdditionalOptions>
-      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">1</WarningLevel>
+    <MASM Include="algo\d2k2_crackme06_hash.asm">
+      <EnableMASM51Compatibility Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</EnableMASM51Compatibility>
+      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">1</WarningLevel>
+      <CallingConvention Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">2</CallingConvention>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">/coff %(AdditionalOptions)</AdditionalOptions>
+      <PerformSyntaxCheckOnly Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</PerformSyntaxCheckOnly>
     </MASM>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
