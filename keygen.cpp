@@ -10,8 +10,8 @@ char *about =
 "keygenned by mudlord\n"
 ;
 
-#define MIN_NAME 1
-#define MAX_NAME 8
+#define MIN_NAME 3
+#define MAX_NAME 0x20
 #define MAX_SERIAL 70
 #define BUTTON_COLOR			0x00000000
 #define BUTTON_TEXT_COLOR		0x00FFFFFF
@@ -37,10 +37,10 @@ int APIENTRY WinMain(HINSTANCE hinst, HINSTANCE hinstPrev, LPSTR lpCmdLine, int 
 }
 
 DWORD WINAPI GenerateSerial(HWND hwnd) {
-	unsigned char name[MAX_NAME] = { 0 };
+	TCHAR name[MAX_NAME] = { 0 };
 	unsigned char serial[MAX_SERIAL] = { 0 };
 
-	if (GetDlgItemText(hwnd, IDC_NAME, (char*)name, MAX_NAME) < MIN_NAME)
+	if (GetDlgItemText(hwnd, IDC_NAME, name, MAX_NAME) < MIN_NAME)
 	{
 		SetDlgItemText(hwnd, IDC_SERIAL, "Please enter a longer name...");
 		return 1;
@@ -54,6 +54,7 @@ DWORD WINAPI GenerateSerial(HWND hwnd) {
 
 void loadmusic(int free_mus)
 {
+#ifndef _DEBUG
 	static HGLOBAL myResourceData = NULL;
 	if (!free_mus)
 	{
@@ -73,6 +74,7 @@ void loadmusic(int free_mus)
 		UnlockResource(myResourceData);
 		FreeResource(myResourceData);
 	}
+#endif
 }
 
 static BOOL CALLBACK DialogFunc(HWND hwndDlg, UINT msg, WPARAM wParam, LPARAM lParam)

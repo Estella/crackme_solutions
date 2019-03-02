@@ -5,6 +5,7 @@
 option casemap:none
 
 EXTERN d2k2_magic1:DWORD
+EXTERN d2k2_magic2:DWORD
 
 .data 
 
@@ -14,6 +15,42 @@ haval_dw2 dd 0
 haval_buf db 70h dup(0)
 haval_buf2 db 70h dup(0)
 haval_buf3 db 70h dup(0)
+b_buffer1 db 70h dup(0)
+b_byte db 0
+
+crc32_array \
+DD 00000000h, 87083096h, 0EE0E612Ch, 990951BAh, 076DC419h, 706AF48Fh, 0E963A535h, 9E6495A3h
+DD 0EDB8832h, 79DCB8A4h, 0E0D5E91Eh, 97D2D988h, 09B64C2Bh, 7EB17CBDh, 0E7B82D07h, 90BF1D91h
+DD 1DB71064h, 6AB020F2h, 0F3B97148h, 84BE41DEh, 1ADAD47Dh, 6DDDE4EBh, 0F4D4B551h, 83D385C7h
+DD 136C9856h, 646BA8C0h, 0FD62F97Ah, 8A65C9ECh, 14015C4Fh, 63066CD9h, 0FA0F3D63h, 8D080DF5h
+DD 3B6E20C8h, 4C69105Eh, 0D56041E4h, 0A2677172h, 3C03E4D1h, 4B04D447h, 0D20D85FDh, 0A50AB56Bh
+DD 35B5A8FAh, 42B2986Ch, 0DBBBC9D6h, 0ACBCF940h, 32D86CE3h, 45DF5C75h, 0DCD60DCFh, 0ABD13D59h
+DD 26D930ACh, 51DE003Ah, 0C8D75180h, 0BFD06116h, 21B4F4B5h, 56B3C423h, 0CFBA9599h, 0B8BD750Fh
+DD 2802B89Eh, 5F058808h, 0C60CD9B2h, 0B10BE924h, 2F6F7C87h, 58684C11h, 0C1611DABh, 0B6662D3Dh
+DD 76DC4190h, 01DB7106h, 98D220BCh, 0EFD5102Ah, 71B18589h, 06B6B51Fh, 9FBFE4A5h, 0E8B8D433h
+DD 7807C9A2h, 0F00F934h, 9607A88Eh, 0E10E9818h, 7F6A0DBBh, 086D3D2Dh, 91646C97h, 0E6635C01h
+DD 6B6B51F4h, 1C6C6162h, 856530D8h, 0F262004Eh, 6C0695EDh, 1B01A57Bh, 8208F4C1h, 0F50FC457h
+DD 65B0D9C6h, 12B7E950h, 8BBEB8EAh, 0FCB9887Ch, 62DD1DDFh, 15DA2D49h, 8CD37CF3h, 0FBD44C65h
+DD 4DB26158h, 3AB551CEh, 0A3BC0074h, 0D4BB30E2h, 4ADFA541h, 3DD895D7h, 0A4D1C46Dh, 0D3D6F4FBh
+DD 4369E96Ah, 346ED9FCh, 0AD678846h, 0DA60B8D0h, 44042D73h, 33031DE5h, 0AA0A4C5Fh, 0DD0D7CC9h
+DD 5005713Ch, 277241AAh, 0BE0B1010h, 0C90C2086h, 5768B525h, 206F85B3h, 0B966D409h, 0CE61E49Fh
+DD 5EDEF90Eh, 29D9C998h, 0B0D09822h, 0C7D7A8B4h, 59B33D17h, 2EB40D81h, 0B7BD5C3Bh, 0C0BA6CADh
+DD 0EDB88320h, 9ABFB3B6h, 03B6E20Ch, 74B1D29Ah, 0EAD57739h, 9DD277AFh, 04DB2615h, 73DC1683h
+DD 0E3630B12h, 94643B84h, 0D6D6A3Eh, 7A6A5AA8h, 0E40ECF0Bh, 9309FF9Dh, 0A00AE27h, 7D079EB1h
+DD 0F00F9344h, 8708A3D2h, 1E01F268h, 6906C2FEh, 0F762575Dh, 806567CBh, 196C3671h, 6E6B06E7h
+DD 0FED41B76h, 89D32BE0h, 10DA7A5Ah, 67DD4ACCh, 0F9B9DF6Fh, 8EBEEFF9h, 17B7BE43h, 60B08ED5h
+DD 0D6D6A3E8h, 0A1D1937Eh, 38D8C2C4h, 4FDFF252h, 0D1BB67F1h, 0A6BC5767h, 3FB506DDh, 48B2364Bh
+DD 0D80D2BDAh, 0AF0A1B4Ch, 36034AF6h, 41047A60h, 0DF60EFC3h, 0A867DF55h, 316E8EEFh, 4669BE79h
+DD 0CB61B38Ch, 0BC66831Ah, 256FD2A0h, 5268E236h, 0CC0C7795h, 0BB0B4703h, 220216B9h, 5505262Fh
+DD 0C5BA3BBEh, 0B2BD0B28h, 2BB45A92h, 5CB36A04h, 0C2D7FFA7h, 0B5D0CF31h, 2CD99E8Bh, 5BDEAE1Dh
+DD 9B64C2B0h, 0EC63F226h, 756AA39Ch, 026D930Ah, 9C0906A9h, 0EB0E363Fh, 72076785h, 05005713h
+DD 95BF4A82h, 0E2B87A14h, 7BB12BAEh, 0CB61B38h, 92D28E9Bh, 0E5D5BE0Dh, 7CDCEFB7h, 0BDBDF21h
+DD 86D3D2D4h, 0F1D4E242h, 68DDB3F8h, 1FDA836Eh, 81BE16CDh, 0F6B9265Bh, 6FB077E1h, 18B74777h
+DD 88085AE6h, 0FF0F6A70h, 66063BCAh, 11010B5Ch, 8F659EFFh, 0F862AE69h, 616BFFD3h, 166CCF45h
+DD 0A00AE278h, 0D70DD2EEh, 4E048354h, 3903B3C2h, 0A7672661h, 0D06016F7h, 4969474Dh, 3E6E77DBh
+DD 0AED16A4Ah, 0D9D65ADCh, 40DF0B66h, 37D83BF0h, 0A9BCAE53h, 0DEBB9EC5h, 47B2CF7Fh, 30B5FFE9h
+DD 0BDBDF21Ch, 0CABAC28Ah, 53B39330h, 24B4A3A6h, 0BAD03605h, 0CDD70693h, 54DE5729h, 23D967BFh
+DD 0B3667A2Eh, 0C4614AB8h, 5D681B02h, 2A6F2B94h, 0B40BBE37h, 0C30C8EA1h, 5A05DF1Bh, 2D08EF88h
 
 
 vaclav  dd 0
@@ -24,35 +61,56 @@ vaclav  dd 0
 option prologue:none
 option epilogue:none
 
-
-
-
-; Source: d2k2_crackme_06.exe (base 0x00400000 - 4194304)
-
-
-; Source: d2k2_crackme_06.exe (base 0x00400000 - 4194304)
-
+; Start of selected range: 0x00403E2C
+d2k2_crackme06_crc32 PROC x:DWORD,y:DWORD
+push ebp
+mov ebp,esp
+push esi
+push ecx
+push edx
+mov esi,dword ptr [ebp+0Ch]
+xor edx,edx
+or eax,0FFFFFFFFh
+mov ecx,dword ptr [ebp+8h]
+LABEL_0x00403E3D:
+mov dl,byte ptr [esi]
+xor dl,al
+shr eax,8h
+xor eax,dword ptr [edx*4h+crc32_array]
+inc esi
+dec ecx
+jne LABEL_0x00403E3D ; => 0x00403E3D
+xor eax,dword ptr [d2k2_magic2]
+not eax
+pop edx
+pop ecx
+pop esi
+leave 
+ret 8h
+; Finish of selected range: 0x00403E5D
+d2k2_crackme06_crc32 endp
 
 ; Start of selected range: 0x0040425E
 d2k2_crackme06_unknown64bhash PROC x:DWORD,y:DWORD,z:DWORD
+unknown64bhash:
 pushad 
 mov ecx,dword ptr [esp+28h]
 mov esi,dword ptr [esp+2Ch]
-mov dword ptr [40668Ch],ecx
-mov byte ptr [4066B0h],1h
-mov dword ptr [406690h],ecx
-mov dword ptr [406694h],esp
-mov dword ptr [4066ACh],esi
+mov dword ptr [b_buffer1],ecx
+mov byte ptr [b_byte],1h
+mov dword ptr [b_buffer1+04h],ecx
+mov dword ptr [b_buffer1+08h],esp
+mov dword ptr [b_buffer1+20h],esi
 xor edx,edx
 xor ebp,ebp
 
 LABEL_0x0040428A:
-mov esi,dword ptr [4066ACh]
-cmp dword ptr [406690h],8h
+mov esi,dword ptr [b_buffer1+20h]
+cmp dword ptr [b_buffer1+04h],8h
 jb LABEL_0x00404348 ; => 0x00404348
 mov eax,dword ptr [esi]
 mov ebx,dword ptr [esi+4h]
-mov dword ptr [406698h],40h
+mov dword ptr [b_buffer1+0CH],40h
 
 LABEL_0x004042AC:
 mov ecx,ebp
@@ -99,7 +157,7 @@ DB 69h, 0C0h, 0C3h, 0C0h, 71h, 0AAh
 xchg ebx,eax
 xchg edx,ebx
 xchg ebp,edx
-dec dword ptr [406698h]
+dec dword ptr [b_buffer1+0CH]
 jne LABEL_0x004042AC ; => 0x004042AC
 mov ecx,ebp
 mov esp,eax
@@ -116,18 +174,18 @@ mov ecx,ebx
 rol ebp,cl
 xor ebp,edx
 mov edx,esp
-sub dword ptr [406690h],8h
-add dword ptr [4066ACh],8h
+sub dword ptr [b_buffer1+04h],8h
+add dword ptr [b_buffer1+20h],8h
 jmp LABEL_0x0040428A ; => 0x0040428A
 
 LABEL_0x00404348:
-cmp byte ptr [4066B0h],0h
+cmp byte ptr [b_byte],0h
 je LABEL_0x004043B6 ; => 0x004043B6
-mov ecx,dword ptr [406690h]
-and byte ptr [4066B0h],0h
-mov dword ptr [406690h],8h
+mov ecx,dword ptr [b_buffer1+04h]
+and byte ptr [b_byte],0h
+mov dword ptr [b_buffer1+04h],8h
 mov eax,ecx
-mov edi,40669Ch
+mov edi,offset b_buffer1+10h
 test eax,eax
 je LABEL_0x00404380 ; => 0x00404380
 
@@ -139,7 +197,7 @@ jne LABEL_0x00404373 ; => 0x00404373
 add edi,eax
 
 LABEL_0x00404380:
-mov ecx,dword ptr [40668Ch]
+mov ecx,dword ptr [b_buffer1]
 mov dword ptr [edi],ecx
 mov ecx,eax
 add edi,4h
@@ -147,7 +205,7 @@ sub ecx,4h
 neg ecx
 je LABEL_0x004043A7 ; => 0x004043A7
 jns LABEL_0x004043A0 ; => 0x004043A0
-add dword ptr [406690h],8h
+add dword ptr [b_buffer1+04h],8h
 add ecx,8h
 
 LABEL_0x004043A0:
@@ -156,15 +214,15 @@ mov byte ptr [ecx+edi],0FFh
 jne LABEL_0x004043A0 ; => 0x004043A0
 
 LABEL_0x004043A7:
-mov dword ptr [4066ACh],40669Ch
+mov dword ptr [b_buffer1+20h],offset b_buffer1+10h
 jmp LABEL_0x0040428A ; => 0x0040428A
 
 LABEL_0x004043B6:
-mov esp,dword ptr [406694h]
+mov esp,dword ptr [b_buffer1+08h]
 mov eax,dword ptr [esp+24h]
 mov dword ptr [eax],edx
 mov dword ptr [eax+4h],ebp
-mov edi,40668Ch
+mov edi, offset b_buffer1
 xor eax,eax
 mov ecx,0Ah
 cld 
@@ -172,6 +230,7 @@ rep stosd
 popad 
 ret 0Ch
 ; Finish of selected range: 0x004043D7
+
 
 d2k2_crackme06_unknown64bhash endp
 
