@@ -99,7 +99,6 @@ void process_serial(char *name, char *serial_out)
 		d2k2_magic2 = d2k2_magicarray[0];
 		havalbuf2[i] = LOBYTE(d2k2_crackme06_crc32(0x10, havalbuf2));
 		EA.ex += 0x10;
-		test += 0x10;
 	}
 
 
