@@ -1,6 +1,6 @@
 #include <windows.h>
 #include <stdint.h>
-extern void _stdcall d2k2_crackme06_unknownhash(DWORD* input, DWORD input_len, DWORD* output);
+extern void _stdcall d2k2_crackme06_unknown128bhash(DWORD* input, DWORD input_len, DWORD* output);
 extern void _stdcall d2k2_crackme06_unknownhash2(DWORD* output, DWORD input_len, DWORD* input);
 extern void _stdcall d2k2_crackme06_haval(DWORD* output, DWORD input_len, DWORD* input);
 unsigned int d2k2_magic1; //variable needed for unknown hash function.
@@ -13,7 +13,7 @@ typedef union
 	struct { uint8_t lo, hi; }b;
 } Register;
 
-#define BUFFER_SIZE 0x40
+#define BUFFER_SIZE 0x80
 
 static const unsigned int crc32tab[16] = {
 	0x00000000, 0x1DB71064, 0x3B6E20C8, 0x26D930AC, 0x76DC4190,
@@ -46,14 +46,14 @@ char base36enc(int num)
 
 void process_serial(char *name, char *serial_out)
 {
-	unsigned char d2k2_stage1unkhash1out[0x12] = { 0 };
-	unsigned char d2k2_havalhashout1[BUFFER_SIZE] = { 0 };
+	unsigned char havalbuf1[BUFFER_SIZE] = { 0 };
+	unsigned char havalbuf2[BUFFER_SIZE] = { 0 };
 	char d2k2_testtable[0x130] = { 0 };
 	unsigned char d2k2_crackme06_serial[0x11] = { 0 };
 
-	unsigned char d2k2_hashinput[0x21] = { 0 };
+	unsigned char inputbuf1[0x40] = { 0 };
 	size_t namelen = strlen(name);
-	lstrcpy(d2k2_hashinput, name);
+	memcpy(inputbuf1, name, namelen);
 	d2k2_magic1 = 0xABCDEFAC;
 
 	DWORD d2k2_magic2[2] = { 0xC3F801AF,0 };
@@ -64,25 +64,24 @@ void process_serial(char *name, char *serial_out)
 	ED.ex = namelen;
 	EA.ex = namelen;
 	//first portion
-	BYTE* d2k2_unk1hashptr = d2k2_stage1unkhash1out;
+
 	for (int i = 0; i < namelen; i++)
 	{
-
-		d2k2_crackme06_unknownhash(d2k2_hashinput, namelen, d2k2_stage1unkhash1out);
-		EB.b.lo = d2k2_hashinput[i];
+		BYTE* d2k2_unk1hashptr = havalbuf1;
+		d2k2_crackme06_unknown128bhash(inputbuf1, namelen, havalbuf1);
+		EB.b.lo = inputbuf1[i];
 		EB.b.lo += i;
 		EB.b.lo ^= namelen;
-		d2k2_stage1unkhash1out[i] += EB.b.lo;
+		havalbuf1[i] += EB.b.lo;
 		EA.ex = *(DWORD*)(d2k2_unk1hashptr + 0x05);
 		EB.ex = *(DWORD*)(d2k2_unk1hashptr + 0x04);
 		EA.ex = EA.ex + EB.ex + 0x2004;
-		int dword1 = *(DWORD*)(d2k2_unk1hashptr + i);
 		EA.ex = i + EA.ex + 0x4064C7;
 		d2k2_magic1 = EA.ex;
 		EB.b.lo ^= EA.b.lo;
-		d2k2_hashinput[i] += EB.b.lo;
+		inputbuf1[i] += EB.b.lo;
 	}
-	d2k2_crackme06_haval(d2k2_havalhashout1, namelen, d2k2_hashinput);
+	d2k2_crackme06_haval(havalbuf2, namelen, inputbuf1);
 	//second portion
 
 	int8_t testvector[0x100] =
@@ -113,8 +112,8 @@ void process_serial(char *name, char *serial_out)
 	for (int i = 0; i != 0x10; i++)
 	{
 
-		EB.ex = (int8_t)d2k2_stage1unkhash1out[i];
-		ED.ex = (int8_t)d2k2_havalhashout1[i];
+		EB.ex = (int8_t)havalbuf1[i];
+		ED.ex = (int8_t)havalbuf2[i];
 		EB.ex += d2k2_magic1;
 		EB.ex ^= ED.ex;
 		EB.ex = (EB.ex * 4) + 0x1024;
@@ -132,18 +131,18 @@ void process_serial(char *name, char *serial_out)
 		EB.ex ^= i;
 		*(DWORD*)(d2k2_testtblptr++) = EB.ex;
 		d2k2_magic1 = EB.ex;
-		d2k2_stage1unkhash1out[i] = EB.b.lo;
+		havalbuf1[i] = EB.b.lo;
 
 
 		//extern void _stdcall d2k2_crackme06_unknownhash(DWORD* input, DWORD input_len, DWORD* output);
 		//extern void _stdcall d2k2_crackme06_unknownhash2(DWORD* output, DWORD input_len, DWORD* input);
 		//extern void _stdcall d2k2_crackme06_haval(DWORD* output, DWORD input_len, DWORD* input);
 
-		d2k2_crackme06_haval(&d2k2_stage1unkhash1out[0], 0x10, &d2k2_havalhashout1[0]);
-		d2k2_crackme06_unknownhash(&d2k2_stage1unkhash1out[0], 0x10, &d2k2_havalhashout1[0]);
-		d2k2_crackme06_unknownhash2(d2k2_magic2, 0x10, d2k2_havalhashout1);
+		d2k2_crackme06_haval(havalbuf1, 0x10, havalbuf2);
+		d2k2_crackme06_unknown128bhash(havalbuf1, 0x10, havalbuf2);
+		//	d2k2_crackme06_unknownhash2(d2k2_magic2, 0x10, d2k2_havalhashout1);
 
-		d2k2_havalhashout1[i] = (BYTE)crc32(d2k2_havalhashout1, 0x10, d2k2_magic2[0]);
+		havalbuf2[i] = (BYTE)crc32(havalbuf2, 0x10, d2k2_magic2[0]);
 
 
 		if (memcmp(&d2k2_testtable[test], &d2k2_testtable[test], 0x10) == 0)
