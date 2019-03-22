@@ -13,6 +13,7 @@ void process_serial(char *name, char *serial_out)
 
 	for (int ctr = 0; ctr < namelen; ctr++)
 		hashinp[ctr] = LOBYTE(*(DWORD *)hashinp ^ (hashinp[ctr] + namelen));
+		
 
 	for (int ctr = 0; ctr != namelen; ctr++)
 	{
@@ -26,14 +27,12 @@ void process_serial(char *name, char *serial_out)
 		magic1 = *(DWORD*)hashbuf_ptr_b;
 		magic2 ^= magic1;
 		magic2 = _rotl(magic2, 7);
-		hashbuf_ptr_b = (char*)hashbuf_ptr;
-		hashbuf_ptr_b += 8;
+		hashbuf_ptr_b += 2;
 		magic1 = *(DWORD*)hashbuf_ptr_b;
 		magic2 ^= magic1;
 		hashinp[ctr] = LOBYTE(magic2);
 		d2k2_crackme05_hash(hashinp, namelen, d2k2_hashout);
-		hashbuf_ptr_b = (char*)hashbuf_ptr;
-		hashbuf_ptr_b += 10;
+		hashbuf_ptr_b += 2;
 		magic1 = *(DWORD*)hashbuf_ptr_b;
 		magic2 ^= magic1;
 		magic2 = _rotl(magic2, 4);

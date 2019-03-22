@@ -7,18 +7,10 @@ void process_serial(char *name, char *serial_out)
     for (int i = 5, j = 0; i != 0; i--, j++)
     {
         byte ascii_val = (name[j] ^ 0x29) + i;
-        if (ascii_val < 'A' || ascii_val > 'Z')
-            ascii_val = 0x52 + i;
-        buffer[j] = ascii_val;
-    }
-
-    for (int i = 5, j = 0; i != 0; i--, j++)
-    {
-        byte ascii_val = (name[j] ^ 0x27) + i;
-        ascii_val++;
-        if (ascii_val < 'A' || ascii_val > 'Z')
-            ascii_val = 0x4D + i;
-        buffer[j + 5] = ascii_val;
+        buffer[j] = (ascii_val < 'A' || ascii_val > 'Z') ? 0x52 + i: ascii_val;
+		byte ascii_val2 = (name[j] ^ 0x27) + i;
+		ascii_val2++;
+		buffer[j + 5] = (ascii_val2 < 'A' || ascii_val2 > 'Z') ? 0x4D + i : ascii_val2;
     }
 
     int ctr = 0;
