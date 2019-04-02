@@ -7,7 +7,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="keygen.cpp" />
-    <ClCompile Include="algo\d2k2_crackme01.c">
+    <ClCompile Include="algo\d2k2_crackme07.c">
       <Filter>Algorithm</Filter>
     </ClCompile>
   </ItemGroup>
