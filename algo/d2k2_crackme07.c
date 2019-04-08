@@ -1,5 +1,6 @@
 #include <windows.h>
 #include <stdint.h>
+#include <stdbool.h>
 
 typedef union
 {
@@ -11,7 +12,7 @@ typedef union
 
 #define BUFFER_SIZE 0x80
 
-unsigned int crc32(const void *data, unsigned int length)
+uint32_t crc32(const void *data, unsigned int length)
 {
 	static const uint32_t crc32tab[16] = {
 	0x00000000, 0x1DB71064, 0x3B6E20C8, 0x26D930AC, 0x76DC4190,
@@ -40,21 +41,25 @@ void process_serial(char *name, char *serial_out)
 	for(int i=0;i<32;i++)
 	buffer[i] = alphabet[rand() % 16];
 	serial - 910E68606534573A1238F9B6D0ED8201*/
-	
-	char buffer[] = "910E68606534573A1238F9B6D0ED8201";
-
-	DWORD nameptr = *(DWORD*)name;
-
-	Register EBX_, EAX_, ESI_;
+	uint8_t buffer[] = "910E68606534573A1238F9B6D0ED8201";
+	Register ESI_;
 	ESI_.ex = 1;
-	EAX_.ex = 1;
-	EBX_.ex = 1;
-	uint32_t crc = crc32(name, EBX_.ex);
-
-
-	
-
-
+	bool donebrute = false;
+	uint32_t crc = 1;
+	while (1)
+	{
+		while (ESI_.ex != 0)
+		{
+			crc = crc32(name, 1);
+			*(uint32_t*)name += crc;
+			ESI_.ex--;
+		}
+		if (donebrute)break;
+		ESI_.ex = crc;
+		ESI_.ex &= 0xFFFFFF;
+		ESI_.ex -= 0xF0000;
+		donebrute = true;
+	}
 	wsprintf(serial_out, "%s", buffer);
 }
 
