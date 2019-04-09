@@ -41,17 +41,31 @@ void process_serial(char *name, char *serial_out)
 	for(int i=0;i<32;i++)
 	buffer[i] = alphabet[rand() % 16];
 	serial - 910E68606534573A1238F9B6D0ED8201*/
-	uint8_t buffer[] = "910E68606534573A1238F9B6D0ED8201";
+	uint8_t testserial[] = "910E68606534573A1238F9B6D0ED8201";
+	uint8_t serialbuffer[16] = { 0 };
+	
+	uint8_t enc_key[8] = { 0 };
+	uint8_t namebuf1[8] = { 0 };
+
+	uint8_t namelen = lstrlen(name);
+	
+	memcpy(namebuf1, name, namelen);
+	uint8_t *nameptr = namebuf1;
+	uint8_t* keyptr = enc_key;
+
 	Register ESI_;
 	ESI_.ex = 1;
 	bool donebrute = false;
 	uint32_t crc = 1;
+
+	//*(uint32_t*)nameptr = 0xAC07C0C4;
+	//*(uint32_t*)nameptr2 = 0xFEDB7106;
 	while (1)
 	{
 		while (ESI_.ex != 0)
 		{
-			crc = crc32(name, 1);
-			*(uint32_t*)name += crc;
+			crc = crc32(namebuf1, 1);
+			*(uint32_t*)nameptr += crc;
 			ESI_.ex--;
 		}
 		if (donebrute)break;
@@ -60,7 +74,21 @@ void process_serial(char *name, char *serial_out)
 		ESI_.ex -= 0xF0000;
 		donebrute = true;
 	}
-	wsprintf(serial_out, "%s", buffer);
+	*(uint32_t*)keyptr = crc;
+
+	DWORD* serialbufptr = serialbuffer;
+	BYTE* name_check2 = name;
+	uint8_t name_check2dw = namelen;
+	for (int i = 0; i < 4; i++)
+	{
+		uint32_t crc = crc32(name_check2, name_check2dw);
+		crc ^= name_check2dw;
+		crc = _rotl(crc, 3);
+		*(DWORD*)(serialbufptr++) = crc;
+		name_check2++;
+		name_check2dw--;
+	}
+	wsprintf(serial_out, "%s", testserial);
 }
 
 
