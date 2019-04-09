@@ -36,13 +36,9 @@ uint32_t crc32(const void *data, unsigned int length)
 
 void process_serial(char *name, char *serial_out)
 {
-
-	/*const char  *alphabet = "0123456789ABCDEF";
-	for(int i=0;i<32;i++)
-	buffer[i] = alphabet[rand() % 16];
-	serial - 910E68606534573A1238F9B6D0ED8201*/
 	uint8_t testserial[] = "910E68606534573A1238F9B6D0ED8201";
-	uint8_t serialbuffer[16] = { 0 };
+	uint8_t serialbuffer1[16] = { 0 };
+	uint8_t serialbuffer2[16] = { 0 };
 	
 	uint8_t enc_key[8] = { 0 };
 	uint8_t namebuf1[8] = { 0 };
@@ -58,8 +54,6 @@ void process_serial(char *name, char *serial_out)
 	bool donebrute = false;
 	uint32_t crc = 1;
 
-	//*(uint32_t*)nameptr = 0xAC07C0C4;
-	//*(uint32_t*)nameptr2 = 0xFEDB7106;
 	while (1)
 	{
 		while (ESI_.ex != 0)
@@ -75,20 +69,38 @@ void process_serial(char *name, char *serial_out)
 		donebrute = true;
 	}
 	*(uint32_t*)keyptr = crc;
-
-	DWORD* serialbufptr = serialbuffer;
 	BYTE* name_check2 = name;
 	uint8_t name_check2dw = namelen;
+	DWORD* serialbufptr = serialbuffer1;
+
 	for (int i = 0; i < 4; i++)
 	{
 		uint32_t crc = crc32(name_check2, name_check2dw);
 		crc ^= name_check2dw;
 		crc = _rotl(crc, 3);
-		*(DWORD*)(serialbufptr++) = crc;
 		name_check2++;
 		name_check2dw--;
+		*(DWORD*)(serialbufptr++) = crc;
 	}
-	wsprintf(serial_out, "%s", testserial);
+
+	serialbufptr = serialbuffer2;
+	memcpy(serialbuffer2, serialbuffer1, 16);
+	for (int i = 0; i < 4;i++)
+	{
+		int test = (uint8_t)serialbuffer1[i];
+		int key = *(DWORD*)keyptr;
+		test ^= key;
+		test = _byteswap_ulong(test);
+		test = _rotl(test, 4);
+		test += namelen;
+		test ^= key;
+		*(DWORD*)(serialbufptr) = _byteswap_ulong(test);
+		serialbufptr++;
+	}
+	
+	for (int i = 0; i < 16; i++) {
+	wsprintf(&serial_out[i * 2], "%02X", serialbuffer2[i]);
+	}
 }
 
 
