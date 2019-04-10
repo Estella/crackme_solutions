@@ -2,14 +2,6 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-typedef union
-{
-	uint64_t rx;
-	uint32_t ex;
-	uint16_t x;
-	struct { uint8_t lo, hi; }b;
-} Register;
-
 #define BUFFER_SIZE 0x80
 
 uint32_t crc32(const void *data, unsigned int length)
@@ -36,43 +28,41 @@ uint32_t crc32(const void *data, unsigned int length)
 
 void process_serial(char *name, char *serial_out)
 {
-	uint8_t testserial[] = "910E68606534573A1238F9B6D0ED8201";
 	uint8_t serialbuffer1[16] = { 0 };
 	uint8_t serialbuffer2[16] = { 0 };
 	
-	uint8_t enc_key[8] = { 0 };
 	uint8_t namebuf1[8] = { 0 };
-
 	uint8_t namelen = lstrlen(name);
-	
 	memcpy(namebuf1, name, namelen);
 	uint8_t *nameptr = namebuf1;
-	uint8_t* keyptr = enc_key;
+	uint32_t enc_key;
 
-	Register ESI_;
-	ESI_.ex = 1;
-	bool donebrute = false;
-	uint32_t crc = 1;
-
+	
 	while (1)
 	{
-		while (ESI_.ex != 0)
+		static uint32_t crc = 1;
+		static bool donebrute = false;
+		static uint32_t cnt = 1;
+		while (cnt != 0)
 		{
 			crc = crc32(namebuf1, 1);
 			*(uint32_t*)nameptr += crc;
-			ESI_.ex--;
+			cnt--;
 		}
-		if (donebrute)break;
-		ESI_.ex = crc;
-		ESI_.ex &= 0xFFFFFF;
-		ESI_.ex -= 0xF0000;
+		if (donebrute)
+		{
+			enc_key = crc;
+			break;
+		}
+		cnt = crc;
+		cnt &= 0xFFFFFF;
+		cnt -= 0xF0000;
 		donebrute = true;
 	}
-	*(uint32_t*)keyptr = crc;
+
 	BYTE* name_check2 = name;
 	uint8_t name_check2dw = namelen;
 	DWORD* serialbufptr = serialbuffer1;
-
 	for (int i = 0; i < 4; i++)
 	{
 		uint32_t crc = crc32(name_check2, name_check2dw);
@@ -87,14 +77,13 @@ void process_serial(char *name, char *serial_out)
 	memcpy(serialbuffer2, serialbuffer1, 16);
 	for (int i = 0; i < 4;i++)
 	{
-		int test = (uint8_t)serialbuffer1[i];
-		int key = *(DWORD*)keyptr;
-		test ^= key;
-		test = _byteswap_ulong(test);
-		test = _rotl(test, 4);
-		test += namelen;
-		test ^= key;
-		*(DWORD*)(serialbufptr) = _byteswap_ulong(test);
+		int final = (uint8_t)serialbuffer1[i];
+		final ^= enc_key;
+		final = _byteswap_ulong(final);
+		final = _rotl(final, 4);
+		final += namelen;
+		final ^= enc_key;
+		*(DWORD*)(serialbufptr) = _byteswap_ulong(final);
 		serialbufptr++;
 	}
 	
