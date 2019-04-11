@@ -28,9 +28,7 @@ uint32_t crc32(const void* data, unsigned int length)
 
 void process_serial(char* name, char* serial_out)
 {
-	
 	uint8_t serialbuffer[16] = { 0 };
-
 	uint8_t namebuf1[8] = { 0 };
 	uint8_t namelen = lstrlen(name);
 	memcpy(namebuf1, name, namelen);
@@ -52,11 +50,9 @@ void process_serial(char* name, char* serial_out)
 	}
 
 	uint8_t lut[4] = { 0 };
-	uint32_t crc = crc32(name, namelen);
-	crc ^= namelen;
-	crc = _rotl(crc, 3);
 	DWORD* lutptr = lut;
-	*(DWORD*)(lutptr) = crc;
+	*(DWORD*)(lutptr) = _rotl(crc32(name, namelen) ^ namelen, 3);
+
 	for (int i = 0; i < 4; i++)
 	{
 		int gen = (uint8_t)lut[i];
