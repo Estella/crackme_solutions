@@ -28,15 +28,14 @@ uint32_t crc32(const void* data, unsigned int length)
 
 void process_serial(char* name, char* serial_out)
 {
-	uint8_t serialbuffer1[16] = { 0 };
-	uint8_t serialbuffer2[16] = { 0 };
+	
+	uint8_t serialbuffer[16] = { 0 };
 
 	uint8_t namebuf1[8] = { 0 };
 	uint8_t namelen = lstrlen(name);
 	memcpy(namebuf1, name, namelen);
 	uint8_t* nameptr = namebuf1;
 	uint32_t enc_key;
-
 	{
 		uint32_t crc = crc32(namebuf1, 1);
 		*(uint32_t*)nameptr += crc;
@@ -52,36 +51,26 @@ void process_serial(char* name, char* serial_out)
 		enc_key = crc;
 	}
 
-
-	BYTE* name_check2 = name;
-	uint8_t name_check2dw = namelen;
-	DWORD* serialbufptr = serialbuffer1;
+	uint8_t lut[4] = { 0 };
+	uint32_t crc = crc32(name, namelen);
+	crc ^= namelen;
+	crc = _rotl(crc, 3);
+	DWORD* lutptr = lut;
+	*(DWORD*)(lutptr) = crc;
 	for (int i = 0; i < 4; i++)
 	{
-		uint32_t crc = crc32(name_check2, name_check2dw);
-		crc ^= name_check2dw;
-		crc = _rotl(crc, 3);
-		name_check2++;
-		name_check2dw--;
-		*(DWORD*)(serialbufptr++) = crc;
-	}
-
-	serialbufptr = serialbuffer2;
-	memcpy(serialbuffer2, serialbuffer1, 16);
-	for (int i = 0; i < 4; i++)
-	{
-		int final = (uint8_t)serialbuffer1[i];
-		final ^= enc_key;
-		final = _byteswap_ulong(final);
-		final = _rotl(final, 4);
-		final += namelen;
-		final ^= enc_key;
-		*(DWORD*)(serialbufptr) = _byteswap_ulong(final);
-		serialbufptr++;
+		int gen = (uint8_t)lut[i];
+		gen ^= enc_key;
+		gen = _byteswap_ulong(gen);
+		gen = _rotl(gen, 4);
+		gen += namelen;
+		gen ^= enc_key;
+		DWORD* bufptr = serialbuffer;
+		*(DWORD*)(bufptr+i) = _byteswap_ulong(gen);
 	}
 
 	for (int i = 0; i < 16; i++) {
-		wsprintf(&serial_out[i * 2], "%02X", serialbuffer2[i]);
+		wsprintf(&serial_out[i * 2], "%02X", serialbuffer[i]);
 	}
 }
 
