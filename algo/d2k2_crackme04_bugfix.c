@@ -1,9 +1,11 @@
 #include <windows.h>
 #include <stdio.h>
+#include <stdint.h>
+#include <stdbool.h>
 void process_serial(char *name, char *serial_out)
 {
     BYTE serial_buf[9] = { '0', '0','0', '0', '0', '0', '0', '0',0x0 };
-    const int check_dword = 0xFFFFE3B0 ^ 0x8EF21BD;
+    const int check_dword = 0xFFFFE479 ^ 0x08EF21BD;
     //pad buf with zero in case it fails.
     bool done = false;
     int num_ser = 0;
