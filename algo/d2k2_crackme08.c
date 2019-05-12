@@ -67,7 +67,7 @@ void process_serial(char *name, char *serial_out)
 	}
 
 
-	Register EB, EC, EA, ED;
+	Register EB, EA, ED;
 	int bignum_tabloff1 = 8;
 	int bignum_tabloff2 = 0x10;
 
@@ -79,12 +79,11 @@ void process_serial(char *name, char *serial_out)
 		EB.ex = *(DWORD*)(bufptr + 1);
 		EA.ex = _rotl(EA.ex, 4);
 		EA.ex ^= EB.ex;
-		EC.ex = 0x80;
-		ED.ex = EA.ex % EC.ex;
-		EA.ex = EA.ex / EC.ex;
+		ED.ex = EA.ex % 0x80;
+		EA.ex = EA.ex / 0x80;
 		bignum_tabloff1 = ED.ex;
-		ED.ex = EA.ex % EC.ex;
-		EA.ex = EA.ex / EC.ex;
+		ED.ex = EA.ex % 0x80;
+		EA.ex = EA.ex / 0x80;
 		bignum_tabloff2 = ED.ex;
 		crc32_rotr += ED.b.lo;
 		crc32_rotl -= EA.b.lo;
