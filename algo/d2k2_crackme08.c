@@ -37,7 +37,18 @@ static const uint64_t bignum_tabl[] =
 0xBE53BAA7FA07E16F, 0xAE5CD19A0E457EDF, 0xF1C639E093AB90EF, 0xBF1CBA98B1FDFEE3
 };
 
+typedef union
+{
+	uint64_t rx;
+	uint32_t ex;
+	uint16_t x;
+	struct { uint8_t lo, hi; }b;
+} Register;
+
 extern void _stdcall d2k2_crackme08_hash(DWORD* output, DWORD input_len, DWORD* input, DWORD output_len);
+
+int8_t crc32_rotr = 8;
+int8_t crc32_rotl = 0x10;
 
 void process_serial(char *name, char *serial_out)
 {
@@ -53,6 +64,31 @@ void process_serial(char *name, char *serial_out)
 
 	for (int i = 0; i < 8; i++) {
 		wsprintf(&hash_ascii[i * 2], "%02X", hash2[i]);
+	}
+
+
+	Register EB, EC, EA, ED;
+	int bignum_tabloff1 = 8;
+	int bignum_tabloff2 = 0x10;
+
+	while (namelen != 0)
+	{
+		DWORD* bufptr = hash2;
+		EA.ex = *bufptr;
+		EA.ex = _rotr(EA.ex, 8);
+		EB.ex = *(DWORD*)(bufptr + 1);
+		EA.ex = _rotl(EA.ex, 4);
+		EA.ex ^= EB.ex;
+		EC.ex = 0x80;
+		ED.ex = EA.ex % EC.ex;
+		EA.ex = EA.ex / EC.ex;
+		bignum_tabloff1 = ED.ex;
+		ED.ex = EA.ex % EC.ex;
+		EA.ex = EA.ex / EC.ex;
+		bignum_tabloff2 = ED.ex;
+		crc32_rotr += ED.b.lo;
+		crc32_rotl -= EA.b.lo;
+		namelen--;
 	}
 
 	wsprintf(serial_out, "%s", hash_ascii);
