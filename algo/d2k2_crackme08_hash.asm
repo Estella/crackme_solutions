@@ -1864,7 +1864,7 @@ cld
 rep stosd 
 popad 
 leave 
-ret 0Ch
+retn 10h
 ; Finish of selected range: 0x0040251A
 
 d2k2_crackme08_hash endp

@@ -43,12 +43,18 @@ void process_serial(char *name, char *serial_out)
 {
 	TCHAR usrname[0x80] = { 0 };
 	uint8_t hash2[0x80] = { 0 };
+	TCHAR hash_ascii[0x80] = { 0 };
+
 	DWORD namelen = 0x80;
 	GetUserNameA(usrname, &namelen);
 	namelen = strlen(usrname);
 	
 	d2k2_crackme08_hash(hash2, namelen, usrname, namelen);
 
-	wsprintf(serial_out, "%s", usrname);
+	for (int i = 0; i < 8; i++) {
+		wsprintf(&hash_ascii[i * 2], "%02X", hash2[i]);
+	}
+
+	wsprintf(serial_out, "%s", hash_ascii);
 }
 
