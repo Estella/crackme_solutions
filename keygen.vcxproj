@@ -135,7 +135,7 @@
     </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="algo\d2k2_crackme04.c" />
+    <ClCompile Include="algo\d2k2_crackme08.c" />
     <ClCompile Include="keygen.cpp">
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Disabled</Optimization>
       <BasicRuntimeChecks Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">EnableFastChecks</BasicRuntimeChecks>
@@ -153,6 +153,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <MASM Include="algo\d2k2_crackme08_hash.asm" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

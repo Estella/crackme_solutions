@@ -37,13 +37,17 @@ static const uint64_t bignum_tabl[] =
 0xBE53BAA7FA07E16F, 0xAE5CD19A0E457EDF, 0xF1C639E093AB90EF, 0xBF1CBA98B1FDFEE3
 };
 
+extern void _stdcall d2k2_crackme08_hash(DWORD* output, DWORD input_len, DWORD* input, DWORD output_len);
+
 void process_serial(char *name, char *serial_out)
 {
 	TCHAR usrname[0x80] = { 0 };
+	uint8_t hash2[0x80] = { 0 };
 	DWORD namelen = 0x80;
 	GetUserNameA(usrname, &namelen);
 	namelen = strlen(usrname);
 	
+	d2k2_crackme08_hash(hash2, namelen, usrname, namelen);
 
 	wsprintf(serial_out, "%s", usrname);
 }
