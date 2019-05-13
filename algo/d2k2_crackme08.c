@@ -52,29 +52,27 @@ extern void _stdcall d2k2_crackme08_hash(DWORD* output, DWORD input_len, DWORD* 
 void process_serial(char *name, char *serial_out)
 {
 	TCHAR usrname[0x80] = { 0 };
-	uint8_t hash2[0x80] = { 0 };
+	uint8_t haval_hash[0x80] = { 0 };
 	uint8_t bignum1[0x10] = { 0 };
-	TCHAR hash_ascii[0x80] = { 0 };
 	DWORD namelen = 0x80;
 	GetUserNameA(usrname, &namelen);
 	namelen = strlen(usrname);
 	
-	d2k2_crackme08_hash(hash2, namelen, usrname, namelen);
+	d2k2_crackme08_hash(haval_hash, namelen, usrname, namelen);
 
-	for (int i = 0; i < 8; i++) {
-		wsprintf(&hash_ascii[i * 2], "%02X", hash2[i]);
-	}
+	
 
 	Register EB, EA, ED;
 	uint8_t bignum_tabloff1;
 	uint8_t bignum_tabloff2;
 	uint8_t rotr_var = 8;
 	uint8_t rotl_var = 0x10;
+	uint32_t* hash_ptr = haval_hash;
+	uint32_t* bn_ptr = bignum1;
 
-	uint32_t* bufptr = hash2;
-	EA.ex = *bufptr;
+	EA.ex = *hash_ptr;
 	EA.ex = _rotr(EA.ex, 8);
-	EB.ex = *(uint32_t*)(bufptr + 1);
+	EB.ex = *(uint32_t*)(hash_ptr + 1);
 	EA.ex = _rotl(EA.ex, 4);
 	EA.ex ^= EB.ex;
 	ED.ex = EA.ex % 0x80;
@@ -84,30 +82,30 @@ void process_serial(char *name, char *serial_out)
 	EA.ex = EA.ex / 0x80;
 	bignum_tabloff2 = ED.ex;
 
-	while (namelen != 0)
+	for(int i=0;i<namelen;i++)
 	{
 		rotr_var += ED.b.lo;
 		rotl_var -= EA.b.lo;
-		namelen--;
 	}
 
 	for (int i = 0; i < 4; i++)
 	{
 		uint8_t chr = name[i];
-		uint32_t hash_frag = *(uint32_t*)(bufptr + i);
+		uint32_t hash_frag = *(uint32_t*)((uint8_t*)hash_ptr + i);
 		uint32_t name_frag = *(uint32_t*)name;
-
 		hash_frag = hash_frag / chr;
 		hash_frag = _rotl(hash_frag, rotl_var);
 		hash_frag ^= 0xEDB88320;
 		hash_frag ^= name_frag;
 		hash_frag = _rotr(hash_frag, rotr_var);
-
-		uint32_t* bufptr = bignum1;
-		*(uint32_t*)(bufptr + i) = hash_frag;
+		hash_frag -= namelen;
+		*(uint32_t*)(bn_ptr + i) = hash_frag;
 	}
 
-
+	TCHAR hash_ascii[0x80] = { 0 };
+	for (int i = 0; i < 8; i++) {
+		wsprintf(&hash_ascii[i * 2], "%02X", haval_hash[i]);
+	}
 	wsprintf(serial_out, "%s", hash_ascii);
 }
 
