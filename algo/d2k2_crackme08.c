@@ -47,8 +47,7 @@ typedef union
 
 extern void _stdcall d2k2_crackme08_hash(DWORD* output, DWORD input_len, DWORD* input, DWORD output_len);
 
-uint8_t crc32_rotr = 8;
-uint8_t crc32_rotl = 0x10;
+
 
 void process_serial(char *name, char *serial_out)
 {
@@ -69,38 +68,30 @@ void process_serial(char *name, char *serial_out)
 	}
 
 	Register EB, EA, ED;
-	int bignum_tabloff1 = 8;
-	int bignum_tabloff2 = 0x10;
+	uint8_t bignum_tabloff1 = 8;
+	uint8_t bignum_tabloff2 = 0x10;
+	uint8_t crc32_rotr = 8;
+	uint8_t crc32_rotl = 0x10;
+
+	DWORD* bufptr = hash2;
+	EA.ex = *bufptr;
+	EA.ex = _rotr(EA.ex, 8);
+	EB.ex = *(DWORD*)(bufptr + 1);
+	EA.ex = _rotl(EA.ex, 4);
+	EA.ex ^= EB.ex;
+	ED.ex = EA.ex % 0x80;
+	EA.ex = EA.ex / 0x80;
+	bignum_tabloff1 = ED.ex;
+	ED.ex = EA.ex % 0x80;
+	EA.ex = EA.ex / 0x80;
+	bignum_tabloff2 = ED.ex;
 
 	while (namelen != 0)
 	{
-		DWORD* bufptr = hash2;
-		EA.ex = *bufptr;
-		EA.ex = _rotr(EA.ex, 8);
-		EB.ex = *(DWORD*)(bufptr + 1);
-		EA.ex = _rotl(EA.ex, 4);
-		EA.ex ^= EB.ex;
-		ED.ex = EA.ex % 0x80;
-		EA.ex = EA.ex / 0x80;
-		bignum_tabloff1 = ED.ex;
-		ED.ex = EA.ex % 0x80;
-		EA.ex = EA.ex / 0x80;
-		bignum_tabloff2 = ED.ex;
 		crc32_rotr += ED.b.lo;
 		crc32_rotl -= EA.b.lo;
 		namelen--;
 	}
-
-	/*
-	for (int i = 0; i < 0x80; i++)
-	{
-		DWORD* tablptr = bignum_lut[i*8];
-		DWORD* tablptr2 = (BYTE*)tablptr + 7;
-		uint32_t one = &tablptr;
-		uint32_t two = &tablptr2;
-		*tablptr2 = one;
-		*tablptr = two;
-	}*/
 
 
 	wsprintf(serial_out, "%s", hash_ascii);
