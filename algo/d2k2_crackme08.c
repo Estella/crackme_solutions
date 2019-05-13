@@ -53,10 +53,8 @@ void process_serial(char *name, char *serial_out)
 {
 	TCHAR usrname[0x80] = { 0 };
 	uint8_t hash2[0x80] = { 0 };
+	uint8_t bignum1[0x10] = { 0 };
 	TCHAR hash_ascii[0x80] = { 0 };
-	uint8_t bignum_lut[0x400] = { 0 };
-
-	memcpy(bignum_lut, bignum_tabl, 0x400);
 	DWORD namelen = 0x80;
 	GetUserNameA(usrname, &namelen);
 	namelen = strlen(usrname);
@@ -68,10 +66,10 @@ void process_serial(char *name, char *serial_out)
 	}
 
 	Register EB, EA, ED;
-	uint8_t bignum_tabloff1 = 8;
-	uint8_t bignum_tabloff2 = 0x10;
-	uint8_t crc32_rotr = 8;
-	uint8_t crc32_rotl = 0x10;
+	uint8_t bignum_tabloff1;
+	uint8_t bignum_tabloff2;
+	uint8_t rotr_var = 8;
+	uint8_t rotl_var = 0x10;
 
 	DWORD* bufptr = hash2;
 	EA.ex = *bufptr;
@@ -88,9 +86,22 @@ void process_serial(char *name, char *serial_out)
 
 	while (namelen != 0)
 	{
-		crc32_rotr += ED.b.lo;
-		crc32_rotl -= EA.b.lo;
+		rotr_var += ED.b.lo;
+		rotl_var -= EA.b.lo;
 		namelen--;
+	}
+
+	for (int i = 0; i < 4; i++)
+	{
+		uint8_t chr = name[i];
+		uint32_t hash_frag = *(DWORD*)(bufptr + i);
+		uint32_t name_frag = *(DWORD*)name;
+
+		hash_frag = hash_frag / chr;
+		hash_frag = _rotl(hash_frag, rotl_var);
+		hash_frag ^= 0xEDB88320;
+		hash_frag ^= name_frag;
+		hash_frag = _rotr(hash_frag, rotr_var);
 	}
 
 
