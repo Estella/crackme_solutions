@@ -71,10 +71,10 @@ void process_serial(char *name, char *serial_out)
 	uint8_t rotr_var = 8;
 	uint8_t rotl_var = 0x10;
 
-	DWORD* bufptr = hash2;
+	uint32_t* bufptr = hash2;
 	EA.ex = *bufptr;
 	EA.ex = _rotr(EA.ex, 8);
-	EB.ex = *(DWORD*)(bufptr + 1);
+	EB.ex = *(uint32_t*)(bufptr + 1);
 	EA.ex = _rotl(EA.ex, 4);
 	EA.ex ^= EB.ex;
 	ED.ex = EA.ex % 0x80;
@@ -94,8 +94,8 @@ void process_serial(char *name, char *serial_out)
 	for (int i = 0; i < 4; i++)
 	{
 		uint8_t chr = name[i];
-		uint32_t hash_frag = *(DWORD*)(bufptr + i);
-		uint32_t name_frag = *(DWORD*)name;
+		uint32_t hash_frag = *(uint32_t*)(bufptr + i);
+		uint32_t name_frag = *(uint32_t*)name;
 
 		hash_frag = hash_frag / chr;
 		hash_frag = _rotl(hash_frag, rotl_var);
