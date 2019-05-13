@@ -102,6 +102,9 @@ void process_serial(char *name, char *serial_out)
 		hash_frag ^= 0xEDB88320;
 		hash_frag ^= name_frag;
 		hash_frag = _rotr(hash_frag, rotr_var);
+
+		uint32_t* bufptr = bignum1;
+		*(uint32_t*)(bufptr + i) = hash_frag;
 	}
 
 
