@@ -104,10 +104,40 @@ void process_serial(char *name, char *serial_out)
 		*(uint32_t*)(bn_ptr + i) = hash_frag;
 	}
 
+	
+	mbedtls_mpi P, Q, E, N, D,subtract, serial;
+	
+
+	mbedtls_mpi_init(&P); mbedtls_mpi_init(&Q); mbedtls_mpi_init(&E);
+	mbedtls_mpi_init(&N); mbedtls_mpi_init(&D); mbedtls_mpi_init(&serial);
+	mbedtls_mpi_init(&subtract);
+
+	mbedtls_mpi_read_binary(&P, &bignum_tabl[bignum_tabloff1],8);
+	mbedtls_mpi_read_binary(&Q, &bignum_tabl[bignum_tabloff2],8);
+	mbedtls_mpi_read_string(&E, 16, "10001");
+	mbedtls_mpi_read_string(&subtract, 16, "1");
+
+	//to get D we need  D=E^(-1) mod ((P-1)*(Q-1))
+    //so decrement P and Q :)
+	mbedtls_mpi_sub_mpi(&P, &P,&subtract);
+	mbedtls_mpi_sub_mpi(&Q, &Q,&subtract);
+	//get N which is ((P-1)*(Q-1))
+	mbedtls_mpi_mul_mpi(&N, &P, &Q);
+	//to get D we need modular inverse!
+	mbedtls_mpi_inv_mod(&D,&E,&N);
+	//we got D! :D now we use regular RSA operation
+
 	TCHAR hash_ascii[0x80] = { 0 };
-	for (int i = 0; i < 8; i++) {
-		wsprintf(&hash_ascii[i * 2], "%02X", haval_hash[i]);
-	}
+	TCHAR hash_ascii2[0x80] = { 0 };
+
+	int len;
+	mbedtls_mpi_write_string(&N, 16,hash_ascii, 0x80, &len);
+
+
+	mbedtls_mpi_free(&P); mbedtls_mpi_free(&Q); mbedtls_mpi_free(&E);
+	mbedtls_mpi_free(&N); mbedtls_mpi_free(&D); mbedtls_mpi_free(&serial);
+	mbedtls_mpi_free(&subtract);
+
 	wsprintf(serial_out, "%s", hash_ascii);
 }
 
