@@ -1,6 +1,8 @@
 #include <windows.h>
 #include <stdint.h>
 
+#include "bignum/bignum.h"
+
 static const uint64_t bignum_tabl[] =
 {
 0x7B09302DB5F059E9, 0x6F38D971A22020A3, 0xCB02BF3F1BCADEA8, 0x3F7B9D178470CCF4,
