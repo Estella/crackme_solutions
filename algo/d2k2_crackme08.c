@@ -70,7 +70,7 @@ void process_serial(char *name, char *serial_out)
 	uint8_t rotr_var = 8;
 	uint8_t rotl_var = 0x10;
 	uint32_t* hash_ptr = haval_hash;
-	uint32_t* ser_ptr = serialhash;
+	
 
 	EA.ex = *hash_ptr;
 	EA.ex = _rotr(EA.ex, 8);
@@ -90,6 +90,7 @@ void process_serial(char *name, char *serial_out)
 		rotl_var -= EA.b.lo;
 	}
 
+	uint32_t* ser_ptr = serialhash;
 	for (int i = 0; i < 4; i++)
 	{
 		uint8_t chr = name[i];
@@ -105,7 +106,7 @@ void process_serial(char *name, char *serial_out)
 	}
 
 	
-	mbedtls_mpi P, Q, E, N,temp_N, D,serialhash_bn,subtract, serial;
+	mbedtls_mpi P, Q, E, N,temp_N, D,serialhash_bn, serial;
 	
 
 	mbedtls_mpi_init(&P); mbedtls_mpi_init(&Q); mbedtls_mpi_init(&E);
@@ -130,12 +131,10 @@ void process_serial(char *name, char *serial_out)
 
 	TCHAR hash_ascii[0x80] = { 0 };
 	int len;
-	mbedtls_mpi_write_string(&serial, 16,hash_ascii, 0x80, &len);
+	mbedtls_mpi_write_string(&serial, 16, serial_out, 0x80, &len);
 
 	mbedtls_mpi_free(&P); mbedtls_mpi_free(&Q); mbedtls_mpi_free(&E);
 	mbedtls_mpi_free(&N); mbedtls_mpi_free(&D); mbedtls_mpi_free(&serial);
 	mbedtls_mpi_free(&serialhash_bn); mbedtls_mpi_free(&temp_N);
-
-	wsprintf(serial_out, "%s", hash_ascii);
 }
 
