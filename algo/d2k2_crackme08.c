@@ -56,19 +56,10 @@ void process_serial(char *name, char *serial_out)
 	TCHAR usrname[0x80] = { 0 };
 	uint8_t haval_hash[0x80] = { 0 };
 	uint8_t serialhash[0x10] = { 0 };
-	DWORD compname_len = 0x80;
+	uint8_t compname_len = 0x80;
 	GetUserNameA(usrname, &compname_len);
 
-
 	d2k2_crackme08_hash(haval_hash, compname_len, usrname, compname_len);
-
-	TCHAR hash_ascii[0x80] = { 0 };
-	for (int i = 0; i < 8; i++) {
-		wsprintf(&hash_ascii[i * 2], "%02X", haval_hash[i]);
-	}
-
-
-	
 
 	Register EB, EA, ED;
 	uint8_t bignum_tabloff1;
@@ -111,13 +102,8 @@ void process_serial(char *name, char *serial_out)
 		*(uint32_t*)(ser_ptr + i) = hash_frag;
 	}
 
-
-	
-
-	
 	mbedtls_mpi P, Q, E, N,temp_N, D,serialhash_bn, serial;
 	
-
 	mbedtls_mpi_init(&P); mbedtls_mpi_init(&Q); mbedtls_mpi_init(&E);
 	mbedtls_mpi_init(&N); mbedtls_mpi_init(&D); mbedtls_mpi_init(&serial);
 	mbedtls_mpi_init(&serialhash_bn); mbedtls_mpi_init(&temp_N);
