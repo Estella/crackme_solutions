@@ -56,11 +56,17 @@ void process_serial(char *name, char *serial_out)
 	TCHAR usrname[0x80] = { 0 };
 	uint8_t haval_hash[0x80] = { 0 };
 	uint8_t serialhash[0x10] = { 0 };
-	DWORD namelen = 0x80;
-	GetUserNameA(usrname, &namelen);
-	namelen = strlen(usrname);
-	
-	d2k2_crackme08_hash(haval_hash, namelen, usrname, namelen);
+	DWORD compname_len = 0x80;
+	GetUserNameA(usrname, &compname_len);
+
+
+	d2k2_crackme08_hash(haval_hash, compname_len, usrname, compname_len);
+
+	TCHAR hash_ascii[0x80] = { 0 };
+	for (int i = 0; i < 8; i++) {
+		wsprintf(&hash_ascii[i * 2], "%02X", haval_hash[i]);
+	}
+
 
 	
 
@@ -83,13 +89,14 @@ void process_serial(char *name, char *serial_out)
 	EA.ex = EA.ex / 0x80;
 	bignum_tabloff2 = ED.ex;
 
-	for(int i=0;i<namelen;i++)
+	for(int i=0;i<compname_len;i++)
 	{
 		rotr_var += ED.b.lo;
 		rotl_var -= EA.b.lo;
 	}
 
 	uint32_t* ser_ptr = serialhash;
+	uint8_t name_len = strlen(name);
 	for (int i = 0; i < 4; i++)
 	{
 		uint8_t chr = name[i];
@@ -100,9 +107,12 @@ void process_serial(char *name, char *serial_out)
 		hash_frag ^= 0xEDB88320;
 		hash_frag ^= name_frag;
 		hash_frag = _rotr(hash_frag, rotr_var);
-		hash_frag -= namelen;
+		hash_frag -= name_len;
 		*(uint32_t*)(ser_ptr + i) = hash_frag;
 	}
+
+
+	
 
 	
 	mbedtls_mpi P, Q, E, N,temp_N, D,serialhash_bn, serial;
@@ -128,7 +138,6 @@ void process_serial(char *name, char *serial_out)
 	//we got D! :D now we use regular RSA operation (serial = input ^ D mod N)
 	mbedtls_mpi_exp_mod(&serial, &serialhash_bn,&D, &N,NULL);
 
-	TCHAR hash_ascii[0x80] = { 0 };
 	int len;
 	mbedtls_mpi_write_string(&serial, 16, serial_out, 0x80, &len);
 
