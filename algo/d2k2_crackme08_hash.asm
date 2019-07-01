@@ -16,13 +16,8 @@ haval_buf3 db 70h dup(0)
 
 .code
 
-option prologue:none
-option epilogue:none
-
 ; Start of selected range: 0x00403E2C
 d2k2_crackme08_hash PROC x:DWORD,y:DWORD,z:DWORD,w:DWORD
-push ebp
-mov ebp,esp
 pushad 
 mov ecx,dword ptr [ebp+0Ch]
 mov esi,dword ptr [ebp+10h]
@@ -1863,8 +1858,7 @@ xor eax,eax
 cld 
 rep stosd 
 popad 
-leave 
-retn 10h
+ret
 ; Finish of selected range: 0x0040251A
 
 d2k2_crackme08_hash endp
