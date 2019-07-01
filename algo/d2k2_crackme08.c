@@ -73,9 +73,8 @@ void process_serial(char *name, char *serial_out)
 	
 
 	EA.ex = *hash_ptr;
-	EA.ex = _rotr(EA.ex, 8);
+	EA.ex = _rotr(EA.ex, 4);
 	EB.ex = *(uint32_t*)(hash_ptr + 1);
-	EA.ex = _rotl(EA.ex, 4);
 	EA.ex ^= EB.ex;
 	ED.ex = EA.ex % 0x80;
 	EA.ex = EA.ex / 0x80;
