@@ -56,8 +56,9 @@ void process_serial(char *name, char *serial_out)
 	TCHAR usrname[0x80] = { 0 };
 	uint8_t haval_hash[0x80] = { 0 };
 	uint8_t serialhash[0x10] = { 0 };
-	uint8_t compname_len = 0x80;
+	DWORD compname_len = 0x80;
 	GetUserNameA(usrname, &compname_len);
+	compname_len = strlen(usrname);
 
 	d2k2_crackme08_hash(haval_hash, compname_len, usrname, compname_len);
 
@@ -90,7 +91,7 @@ void process_serial(char *name, char *serial_out)
 	uint8_t name_len = strlen(name);
 	for (int i = 0; i < 4; i++)
 	{
-		uint8_t chr = name[i];
+		int8_t chr = name[i];
 		uint32_t hash_frag = *(uint32_t*)((uint8_t*)hash_ptr + i);
 		uint32_t name_frag = *(uint32_t*)name;
 		hash_frag = hash_frag / chr;
