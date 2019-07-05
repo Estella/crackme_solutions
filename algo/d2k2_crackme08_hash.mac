@@ -1,0 +1,215 @@
+IFE	(PASS - 3)
+	Fphi_1	MACRO	x6, x5, x4, x3, x2, x1, x0
+		f_1	x1, x0, x3, x5, x6, x2, x4
+	ENDM
+	Fphi_2	MACRO	x6, x5, x4, x3, x2, x1, x0
+		f_2	x4, x2, x1, x0, x5, x3, x6
+	ENDM
+	Fphi_3	MACRO	x6, x5, x4, x3, x2, x1, x0
+		f_3	x6, x1, x2, x3, x4, x5, x0
+	ENDM
+ENDIF
+           
+IFE	(PASS - 4)
+	Fphi_1	MACRO	x6, x5, x4, x3, x2, x1, x0
+		f_1	x2, x6, x1, x4, x5, x3, x0
+	ENDM
+	Fphi_2	MACRO	x6, x5, x4, x3, x2, x1, x0
+		f_2	x3, x5, x2, x0, x1, x6, x4
+	ENDM
+	Fphi_3	MACRO	x6, x5, x4, x3, x2, x1, x0
+		f_3	x1, x4, x3, x6, x0, x2, x5
+	ENDM
+	Fphi_4	MACRO	x6, x5, x4, x3, x2, x1, x0
+		f_4	x6, x4, x0, x5, x2, x1, x3
+	ENDM
+ENDIF
+
+IFE	(PASS - 5)
+	Fphi_1	MACRO	x6, x5, x4, x3, x2, x1, x0
+		f_1	x3, x4, x1, x0, x5, x2, x6
+	ENDM
+	Fphi_2	MACRO	x6, x5, x4, x3, x2, x1, x0
+		f_2	x6, x2, x1, x0, x3, x4, x5
+	ENDM
+	Fphi_3	MACRO	x6, x5, x4, x3, x2, x1, x0
+		f_3	x2, x6, x0, x4, x3, x1, x5
+	ENDM
+	Fphi_4	MACRO	x6, x5, x4, x3, x2, x1, x0
+		f_4	x1, x5, x3, x2, x0, x4, x6
+	ENDM
+	Fphi_5	MACRO	x6, x5, x4, x3, x2, x1, x0
+		f_5	x2, x5, x0, x6, x4, x3, x1
+	ENDM
+ENDIF
+
+FF_1	MACRO	x7, x6, x5, x4, x3, x2, x1, x0, mem_arg
+
+	Fphi_1		x6, x5, x4, x3, x2, x1, x0	; wynik w eax
+
+	ror	eax, 7
+	ror	x7, 11
+	add	eax, mem_arg
+	add	x7, eax
+      
+ENDM
+
+f_1	MACRO	x6, x5, x4, x3, x2, x1, x0
+
+	mov	ecx, x3
+	mov	eax, x0
+	and	ecx, x6		;  x3 & x6
+	mov	ebx, x2
+	xor	ecx, eax	; (x3 & x6) ^ x0
+	and	ebx, x5		;  x2 & x5
+	xor	eax, x4		;  x0 ^ x4
+	xor	ebx, ecx	; (x2 & x5) ^ (x3 & x6) ^ x0
+	and	eax, x1		;  x1 & (x0 ^ x4)
+	xor	eax, ebx
+
+ENDM
+
+FF_2	MACRO	x7, x6, x5, x4, x3, x2, x1, x0, mem_arg, c
+
+	Fphi_2		x6, x5, x4, x3, x2, x1, x0	; wynik w eax
+
+	ror	eax, 7
+	ror	x7, 11
+	add	eax, mem_arg
+	add	eax, c
+	add	x7, eax
+
+ENDM
+
+f_2	MACRO	x6, x5, x4, x3, x2, x1, x0
+
+	mov	ebx, x4
+	mov	eax, x3
+	mov	edx, x5
+	not	eax		; ~x3
+	and	ebx, edx	; x4 & x5
+	and	eax, x1		; x1 & (~x3)
+	xor	ebx, x0		; (x4 & x5) ^ x0
+	xor	eax, x6		; (x1 & (~x3)) ^ x6
+	mov	ecx, edx	; x5
+	xor	eax, ebx	; (x1 & (~x3)) ^ x6 ^ (x4 & x5) ^ x0
+	xor	ecx, x1		; x1 ^ x5
+	and	eax, x2		; x2 & [(x1 & (~x3)) ^ x6 ^ (x4 & x5) ^ x0]
+	and	ecx, x4		; x4 & (x1 ^ x5)
+	and	edx, x3		; x3 & x5
+	xor	eax, ecx
+	xor	edx, x0
+	xor	eax, edx
+
+ENDM
+
+FF_3	MACRO	x7, x6, x5, x4, x3, x2, x1, x0, mem_arg, c
+
+	Fphi_3		x6, x5, x4, x3, x2, x1, x0	; wynik w eax
+
+	ror	eax, 7
+	ror	x7, 11
+	add	eax, mem_arg
+	add	eax, c
+	add	x7, eax
+
+ENDM
+
+f_3	MACRO	x6, x5, x4, x3, x2, x1, x0
+
+	mov	edx, x1
+	mov	eax, x5
+	and	edx, x2		; x1 & x2
+	mov	ebx, x1
+	and	eax, x2		; x2 & x5
+	xor	edx, x6		; (x1 & x2) ^ x6
+	xor	eax, x0		; (x2 & x5) ^ x0
+	and	ebx, x4		; x1 & x4
+	xor	edx, x0		; (x1 & x2) ^ x6 ^ x0
+	xor	eax, ebx	; (x2 & x5) ^ x0 ^ (x1 & x4)
+	and	edx, x3		; x3 & [(x1 & x2) ^ x6 ^ x0]
+	xor	eax, edx
+
+ENDM
+
+FF_4	MACRO	x7, x6, x5, x4, x3, x2, x1, x0, mem_arg, c
+
+	Fphi_4		x6, x5, x4, x3, x2, x1, x0	; wynik w eax
+
+	ror	eax, 7
+	ror	x7, 11
+	add	eax, mem_arg
+	add	eax, c
+	add	x7, eax
+
+ENDM
+
+f_4	MACRO	x6, x5, x4, x3, x2, x1, x0
+
+	mov	edx, x2
+	mov	ecx, x6
+	not	edx		; ~x2
+	mov	eax, x1
+	or	ecx, x3		;  x6 | x3
+	and	eax, x2		;  x1 & x2
+	and	edx, x5		; ~x2 & x5
+	xor	eax, x6		; (x1 & x2) ^ x6
+	xor	edx, x1		;(~x2 & x5) ^ x1
+	xor	eax, x5		; (x1 & x2) ^ x6 ^ x5	= a2
+	mov	ebx, x2
+	xor	ecx, x0		; (x6 | x3) ^ x0
+	and	ebx, x6		;  x2 & x6		= a4
+	xor	edx, ecx	;(~x2 & x5) ^ x1 ^ (x6 | x3) ^ x0
+	and	eax, x3		; x3 & ((x1 & x2) ^ x6 ^ x5)		=a2
+	and	edx, x4		; x4 & ((~x2 & x5) ^ x1 ^ (x6 | x3) ^ x0)	= a1
+	xor	ebx, x0
+	xor	eax, edx
+	xor	eax, ebx
+
+ENDM
+
+FF_5	MACRO	x7, x6, x5, x4, x3, x2, x1, x0, mem_arg, c
+
+	Fphi_5		x6, x5, x4, x3, x2, x1, x0	; wynik w eax
+
+	ror	eax, 7
+	ror	x7, 11
+	add	eax, mem_arg
+	add	eax, c
+	add	x7, eax
+
+ENDM
+
+f_5	MACRO	x6, x5, x4, x3, x2, x1, x0
+
+	mov	ecx, x0
+	mov	edx, x3
+	and	ecx, x2
+	mov	eax, x0
+	and	ecx, edx	;x0 & x2 & x3
+	xor	eax, x2		;x0 ^ x2
+	xor	ecx, x4		;x4 ^ (x0 & x2 & x3)
+	and	eax, x5		;(x0 ^ x2) & x5
+	and	ecx, x1		;x1 & [x4 ^ (x0 & x2 & x3)]
+	xor	eax, x0
+	and	edx, x6
+	xor	eax, ecx
+	xor	eax, edx
+
+ENDM
+
+MAKE_HAVAL_MAGIC	MACRO
+	LOCAL	haval_magic
+		haval_magic	equ (((FPTLEN SHL 3) OR PASS) SHL 3) OR 1
+
+	mov	word ptr [edi], haval_magic
+ENDM
+
+	y0	equ	dword ptr [edi +  0]
+	y1	equ	dword ptr [edi +  4]
+	y2	equ	dword ptr [edi +  8]
+	y3	equ	dword ptr [edi + 12]
+	y4	equ	dword ptr [edi + 16]
+	y5	equ	dword ptr [edi + 20]
+	y6	equ	dword ptr [edi + 24]
+	y7	equ	dword ptr [edi + 28]

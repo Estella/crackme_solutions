@@ -1,1865 +1,595 @@
-.686p
-.mmx                        ; enable MMX instructions
-.xmm                        ; enable SSE instructions
-.model flat, stdcall
-option casemap:none
+.586
+.model flat,c
 
-.data 
+comment ~
 
-havalb1 db 0
-haval1 dd 0
-haval2 dd 0
-haval_buf db 70h dup(0)
-haval_buf2 db 70h dup(0)
-haval_buf3 db 70h dup(0)
+algo			: HAVAL v.1
+message digest size	: 128, 160, 192, 224 or 256 bits
+
+
+	push	offset ptrData			;The address of the data to be hashed
+	push	nSize 				;The number of bytes of data to be hashed
+	push	offset ptrBuffer		;The pointer to the buffer to receive message digest
+	call	Haval
+
+
+WiteG//xtreeme (witeg@poczta.fm, www.witeg.prv.pl)
+
+~
+; ---------------------------------------------------------------------------
+; You should set number of passes (PASS) and size of message digest (FPTLEN) !
+; ---------------------------------------------------------------------------
+
+PASS	equ 3			;3, 4, 5
+FPTLEN	equ 128			;128, 160, 192, 224, 256
+
+; ---------------------------------------------------------------------------
+
+include	d2k2_crackme08_hash.mac
+
+d2k2_crackme08_hash	PROTO	:DWORD, :DWORD, :DWORD
+
 .data?
+_hash_0		dd ?
+_hash_1		dd ?
+_hash_2		dd ?
+_hash_3		dd ?
+_hash_4		dd ?
+_hash_5		dd ?
+_hash_6		dd ?
+_hash_7		dd ?
+_temp_hash_0	dd ?
+_temp_hash_1	dd ?
+_temp_hash_2	dd ?
+_temp_hash_3	dd ?
+_temp_hash_4	dd ?
+_temp_hash_5	dd ?
+_temp_hash_6	dd ?
+_temp_hash_7	dd ?
+_temp_bufor 	db 256 dup(?)
+_size		dd ?
+_flag		dd ?
+_count		dd ?
 
 .code
+d2k2_crackme08_hash		proc	ptrOut: DWORD, lData: DWORD, ptrData: DWORD
+	pushad
 
-; Start of selected range: 0x00403E2C
-d2k2_crackme08_hash PROC x:DWORD,y:DWORD,z:DWORD,w:DWORD
-pushad 
-mov ecx,dword ptr [ebp+0Ch]
-mov esi,dword ptr [ebp+10h]
-mov dword ptr [haval1],ecx
-mov byte ptr [havalb1],1h
-mov dword ptr [haval2],ecx
-mov edi,offset haval_buf2
-mov dword ptr [haval_buf],344F7A98h
-mov dword ptr [haval_buf+4h],85A308D3h
-mov dword ptr [haval_buf+8h],13198A2Eh
-mov dword ptr [haval_buf+12],3707344h
-mov dword ptr [haval_buf+16],0A4093822h
-mov dword ptr [haval_buf+20],299F31D0h
-mov dword ptr [haval_buf+24],82EFA98h
-mov dword ptr [haval_buf+28],0EC4E6C89h
-mov dword ptr [edi],243F6A88h
-mov dword ptr [edi+4h],85A308D3h
-mov dword ptr [edi+8h],13198A2Eh
-mov dword ptr [edi+0Ch],3707344h
-mov dword ptr [edi+10h],0A4093822h
-mov dword ptr [edi+14h],299F31D0h
-mov dword ptr [edi+18h],82EFA98h
-mov dword ptr [edi+1Ch],0EC4E6C89h
+	mov	ecx, lData
+	mov	esi, ptrData
+	mov	dword ptr [_size] , ecx
+	mov	byte ptr  [_flag] , 1
+	mov	dword ptr [_count], ecx
 
-LABEL_0x004010A9:
-cmp dword ptr [haval2],80h
-jb LABEL_0x0040242F ; => 0x0040242F
-mov ecx,dword ptr [edi+14h]
-mov eax,dword ptr [edi+10h]
-and ecx,dword ptr [edi+4h]
-mov ebx,dword ptr [edi+18h]
-xor ecx,eax
-and ebx,dword ptr [edi]
-xor eax,dword ptr [edi+0Ch]
-xor ebx,ecx
-and eax,dword ptr [edi+8h]
-xor eax,ebx
-ror eax,7h
-ror dword ptr [edi+1Ch],0Bh
-add eax,dword ptr [esi]
-add dword ptr [edi+1Ch],eax
-mov ecx,dword ptr [edi+10h]
-mov eax,dword ptr [edi+0Ch]
-and ecx,dword ptr [edi]
-mov ebx,dword ptr [edi+14h]
-xor ecx,eax
-and ebx,dword ptr [edi+1Ch]
-xor eax,dword ptr [edi+8h]
-xor ebx,ecx
-and eax,dword ptr [edi+4h]
-xor eax,ebx
-ror eax,7h
-ror dword ptr [edi+18h],0Bh
-add eax,dword ptr [esi+4h]
-add dword ptr [edi+18h],eax
-mov ecx,dword ptr [edi+0Ch]
-mov eax,dword ptr [edi+8h]
-and ecx,dword ptr [edi+1Ch]
-mov ebx,dword ptr [edi+10h]
-xor ecx,eax
-and ebx,dword ptr [edi+18h]
-xor eax,dword ptr [edi+4h]
-xor ebx,ecx
-and eax,dword ptr [edi]
-xor eax,ebx
-ror eax,7h
-ror dword ptr [edi+14h],0Bh
-add eax,dword ptr [esi+8h]
-add dword ptr [edi+14h],eax
-mov ecx,dword ptr [edi+8h]
-mov eax,dword ptr [edi+4h]
-and ecx,dword ptr [edi+18h]
-mov ebx,dword ptr [edi+0Ch]
-xor ecx,eax
-and ebx,dword ptr [edi+14h]
-xor eax,dword ptr [edi]
-xor ebx,ecx
-and eax,dword ptr [edi+1Ch]
-xor eax,ebx
-ror eax,7h
-ror dword ptr [edi+10h],0Bh
-add eax,dword ptr [esi+0Ch]
-add dword ptr [edi+10h],eax
-mov ecx,dword ptr [edi+4h]
-mov eax,dword ptr [edi]
-and ecx,dword ptr [edi+14h]
-mov ebx,dword ptr [edi+8h]
-xor ecx,eax
-and ebx,dword ptr [edi+10h]
-xor eax,dword ptr [edi+1Ch]
-xor ebx,ecx
-and eax,dword ptr [edi+18h]
-xor eax,ebx
-ror eax,7h
-ror dword ptr [edi+0Ch],0Bh
-add eax,dword ptr [esi+10h]
-add dword ptr [edi+0Ch],eax
-mov ecx,dword ptr [edi]
-mov eax,dword ptr [edi+1Ch]
-and ecx,dword ptr [edi+10h]
-mov ebx,dword ptr [edi+4h]
-xor ecx,eax
-and ebx,dword ptr [edi+0Ch]
-xor eax,dword ptr [edi+18h]
-xor ebx,ecx
-and eax,dword ptr [edi+14h]
-xor eax,ebx
-ror eax,7h
-ror dword ptr [edi+8h],0Bh
-add eax,dword ptr [esi+14h]
-add dword ptr [edi+8h],eax
-mov ecx,dword ptr [edi+1Ch]
-mov eax,dword ptr [edi+18h]
-and ecx,dword ptr [edi+0Ch]
-mov ebx,dword ptr [edi]
-xor ecx,eax
-and ebx,dword ptr [edi+8h]
-xor eax,dword ptr [edi+14h]
-xor ebx,ecx
-and eax,dword ptr [edi+10h]
-xor eax,ebx
-ror eax,7h
-ror dword ptr [edi+4h],0Bh
-add eax,dword ptr [esi+18h]
-add dword ptr [edi+4h],eax
-mov ecx,dword ptr [edi+18h]
-mov eax,dword ptr [edi+14h]
-and ecx,dword ptr [edi+8h]
-mov ebx,dword ptr [edi+1Ch]
-xor ecx,eax
-and ebx,dword ptr [edi+4h]
-xor eax,dword ptr [edi+10h]
-xor ebx,ecx
-and eax,dword ptr [edi+0Ch]
-xor eax,ebx
-ror eax,7h
-ror dword ptr [edi],0Bh
-add eax,dword ptr [esi+1Ch]
-add dword ptr [edi],eax
-mov ecx,dword ptr [edi+14h]
-mov eax,dword ptr [edi+10h]
-and ecx,dword ptr [edi+4h]
-mov ebx,dword ptr [edi+18h]
-xor ecx,eax
-and ebx,dword ptr [edi]
-xor eax,dword ptr [edi+0Ch]
-xor ebx,ecx
-and eax,dword ptr [edi+8h]
-xor eax,ebx
-ror eax,7h
-ror dword ptr [edi+1Ch],0Bh
-add eax,dword ptr [esi+20h]
-add dword ptr [edi+1Ch],eax
-mov ecx,dword ptr [edi+10h]
-mov eax,dword ptr [edi+0Ch]
-and ecx,dword ptr [edi]
-mov ebx,dword ptr [edi+14h]
-xor ecx,eax
-and ebx,dword ptr [edi+1Ch]
-xor eax,dword ptr [edi+8h]
-xor ebx,ecx
-and eax,dword ptr [edi+4h]
-xor eax,ebx
-ror eax,7h
-ror dword ptr [edi+18h],0Bh
-add eax,dword ptr [esi+24h]
-add dword ptr [edi+18h],eax
-mov ecx,dword ptr [edi+0Ch]
-mov eax,dword ptr [edi+8h]
-and ecx,dword ptr [edi+1Ch]
-mov ebx,dword ptr [edi+10h]
-xor ecx,eax
-and ebx,dword ptr [edi+18h]
-xor eax,dword ptr [edi+4h]
-xor ebx,ecx
-and eax,dword ptr [edi]
-xor eax,ebx
-ror eax,7h
-ror dword ptr [edi+14h],0Bh
-add eax,dword ptr [esi+28h]
-add dword ptr [edi+14h],eax
-mov ecx,dword ptr [edi+8h]
-mov eax,dword ptr [edi+4h]
-and ecx,dword ptr [edi+18h]
-mov ebx,dword ptr [edi+0Ch]
-xor ecx,eax
-and ebx,dword ptr [edi+14h]
-xor eax,dword ptr [edi]
-xor ebx,ecx
-and eax,dword ptr [edi+1Ch]
-xor eax,ebx
-ror eax,7h
-ror dword ptr [edi+10h],0Bh
-add eax,dword ptr [esi+2Ch]
-add dword ptr [edi+10h],eax
-mov ecx,dword ptr [edi+4h]
-mov eax,dword ptr [edi]
-and ecx,dword ptr [edi+14h]
-mov ebx,dword ptr [edi+8h]
-xor ecx,eax
-and ebx,dword ptr [edi+10h]
-xor eax,dword ptr [edi+1Ch]
-xor ebx,ecx
-and eax,dword ptr [edi+18h]
-xor eax,ebx
-ror eax,7h
-ror dword ptr [edi+0Ch],0Bh
-add eax,dword ptr [esi+30h]
-add dword ptr [edi+0Ch],eax
-mov ecx,dword ptr [edi]
-mov eax,dword ptr [edi+1Ch]
-and ecx,dword ptr [edi+10h]
-mov ebx,dword ptr [edi+4h]
-xor ecx,eax
-and ebx,dword ptr [edi+0Ch]
-xor eax,dword ptr [edi+18h]
-xor ebx,ecx
-and eax,dword ptr [edi+14h]
-xor eax,ebx
-ror eax,7h
-ror dword ptr [edi+8h],0Bh
-add eax,dword ptr [esi+34h]
-add dword ptr [edi+8h],eax
-mov ecx,dword ptr [edi+1Ch]
-mov eax,dword ptr [edi+18h]
-and ecx,dword ptr [edi+0Ch]
-mov ebx,dword ptr [edi]
-xor ecx,eax
-and ebx,dword ptr [edi+8h]
-xor eax,dword ptr [edi+14h]
-xor ebx,ecx
-and eax,dword ptr [edi+10h]
-xor eax,ebx
-ror eax,7h
-ror dword ptr [edi+4h],0Bh
-add eax,dword ptr [esi+38h]
-add dword ptr [edi+4h],eax
-mov ecx,dword ptr [edi+18h]
-mov eax,dword ptr [edi+14h]
-and ecx,dword ptr [edi+8h]
-mov ebx,dword ptr [edi+1Ch]
-xor ecx,eax
-and ebx,dword ptr [edi+4h]
-xor eax,dword ptr [edi+10h]
-xor ebx,ecx
-and eax,dword ptr [edi+0Ch]
-xor eax,ebx
-ror eax,7h
-ror dword ptr [edi],0Bh
-add eax,dword ptr [esi+3Ch]
-add dword ptr [edi],eax
-mov ecx,dword ptr [edi+14h]
-mov eax,dword ptr [edi+10h]
-and ecx,dword ptr [edi+4h]
-mov ebx,dword ptr [edi+18h]
-xor ecx,eax
-and ebx,dword ptr [edi]
-xor eax,dword ptr [edi+0Ch]
-xor ebx,ecx
-and eax,dword ptr [edi+8h]
-xor eax,ebx
-ror eax,7h
-ror dword ptr [edi+1Ch],0Bh
-add eax,dword ptr [esi+40h]
-add dword ptr [edi+1Ch],eax
-mov ecx,dword ptr [edi+10h]
-mov eax,dword ptr [edi+0Ch]
-and ecx,dword ptr [edi]
-mov ebx,dword ptr [edi+14h]
-xor ecx,eax
-and ebx,dword ptr [edi+1Ch]
-xor eax,dword ptr [edi+8h]
-xor ebx,ecx
-and eax,dword ptr [edi+4h]
-xor eax,ebx
-ror eax,7h
-ror dword ptr [edi+18h],0Bh
-add eax,dword ptr [esi+44h]
-add dword ptr [edi+18h],eax
-mov ecx,dword ptr [edi+0Ch]
-mov eax,dword ptr [edi+8h]
-and ecx,dword ptr [edi+1Ch]
-mov ebx,dword ptr [edi+10h]
-xor ecx,eax
-and ebx,dword ptr [edi+18h]
-xor eax,dword ptr [edi+4h]
-xor ebx,ecx
-and eax,dword ptr [edi]
-xor eax,ebx
-ror eax,7h
-ror dword ptr [edi+14h],0Bh
-add eax,dword ptr [esi+48h]
-add dword ptr [edi+14h],eax
-mov ecx,dword ptr [edi+8h]
-mov eax,dword ptr [edi+4h]
-and ecx,dword ptr [edi+18h]
-mov ebx,dword ptr [edi+0Ch]
-xor ecx,eax
-and ebx,dword ptr [edi+14h]
-xor eax,dword ptr [edi]
-xor ebx,ecx
-and eax,dword ptr [edi+1Ch]
-xor eax,ebx
-ror eax,7h
-ror dword ptr [edi+10h],0Bh
-add eax,dword ptr [esi+4Ch]
-add dword ptr [edi+10h],eax
-mov ecx,dword ptr [edi+4h]
-mov eax,dword ptr [edi]
-and ecx,dword ptr [edi+14h]
-mov ebx,dword ptr [edi+8h]
-xor ecx,eax
-and ebx,dword ptr [edi+10h]
-xor eax,dword ptr [edi+1Ch]
-xor ebx,ecx
-and eax,dword ptr [edi+18h]
-xor eax,ebx
-ror eax,7h
-ror dword ptr [edi+0Ch],0Bh
-add eax,dword ptr [esi+50h]
-add dword ptr [edi+0Ch],eax
-mov ecx,dword ptr [edi]
-mov eax,dword ptr [edi+1Ch]
-and ecx,dword ptr [edi+10h]
-mov ebx,dword ptr [edi+4h]
-xor ecx,eax
-and ebx,dword ptr [edi+0Ch]
-xor eax,dword ptr [edi+18h]
-xor ebx,ecx
-and eax,dword ptr [edi+14h]
-xor eax,ebx
-ror eax,7h
-ror dword ptr [edi+8h],0Bh
-add eax,dword ptr [esi+54h]
-add dword ptr [edi+8h],eax
-mov ecx,dword ptr [edi+1Ch]
-mov eax,dword ptr [edi+18h]
-and ecx,dword ptr [edi+0Ch]
-mov ebx,dword ptr [edi]
-xor ecx,eax
-and ebx,dword ptr [edi+8h]
-xor eax,dword ptr [edi+14h]
-xor ebx,ecx
-and eax,dword ptr [edi+10h]
-xor eax,ebx
-ror eax,7h
-ror dword ptr [edi+4h],0Bh
-add eax,dword ptr [esi+58h]
-add dword ptr [edi+4h],eax
-mov ecx,dword ptr [edi+18h]
-mov eax,dword ptr [edi+14h]
-and ecx,dword ptr [edi+8h]
-mov ebx,dword ptr [edi+1Ch]
-xor ecx,eax
-and ebx,dword ptr [edi+4h]
-xor eax,dword ptr [edi+10h]
-xor ebx,ecx
-and eax,dword ptr [edi+0Ch]
-xor eax,ebx
-ror eax,7h
-ror dword ptr [edi],0Bh
-add eax,dword ptr [esi+5Ch]
-add dword ptr [edi],eax
-mov ecx,dword ptr [edi+14h]
-mov eax,dword ptr [edi+10h]
-and ecx,dword ptr [edi+4h]
-mov ebx,dword ptr [edi+18h]
-xor ecx,eax
-and ebx,dword ptr [edi]
-xor eax,dword ptr [edi+0Ch]
-xor ebx,ecx
-and eax,dword ptr [edi+8h]
-xor eax,ebx
-ror eax,7h
-ror dword ptr [edi+1Ch],0Bh
-add eax,dword ptr [esi+60h]
-add dword ptr [edi+1Ch],eax
-mov ecx,dword ptr [edi+10h]
-mov eax,dword ptr [edi+0Ch]
-and ecx,dword ptr [edi]
-mov ebx,dword ptr [edi+14h]
-xor ecx,eax
-and ebx,dword ptr [edi+1Ch]
-xor eax,dword ptr [edi+8h]
-xor ebx,ecx
-and eax,dword ptr [edi+4h]
-xor eax,ebx
-ror eax,7h
-ror dword ptr [edi+18h],0Bh
-add eax,dword ptr [esi+64h]
-add dword ptr [edi+18h],eax
-mov ecx,dword ptr [edi+0Ch]
-mov eax,dword ptr [edi+8h]
-and ecx,dword ptr [edi+1Ch]
-mov ebx,dword ptr [edi+10h]
-xor ecx,eax
-and ebx,dword ptr [edi+18h]
-xor eax,dword ptr [edi+4h]
-xor ebx,ecx
-and eax,dword ptr [edi]
-xor eax,ebx
-ror eax,7h
-ror dword ptr [edi+14h],0Bh
-add eax,dword ptr [esi+68h]
-add dword ptr [edi+14h],eax
-mov ecx,dword ptr [edi+8h]
-mov eax,dword ptr [edi+4h]
-and ecx,dword ptr [edi+18h]
-mov ebx,dword ptr [edi+0Ch]
-xor ecx,eax
-and ebx,dword ptr [edi+14h]
-xor eax,dword ptr [edi]
-xor ebx,ecx
-and eax,dword ptr [edi+1Ch]
-xor eax,ebx
-ror eax,7h
-ror dword ptr [edi+10h],0Bh
-add eax,dword ptr [esi+6Ch]
-add dword ptr [edi+10h],eax
-mov ecx,dword ptr [edi+4h]
-mov eax,dword ptr [edi]
-and ecx,dword ptr [edi+14h]
-mov ebx,dword ptr [edi+8h]
-xor ecx,eax
-and ebx,dword ptr [edi+10h]
-xor eax,dword ptr [edi+1Ch]
-xor ebx,ecx
-and eax,dword ptr [edi+18h]
-xor eax,ebx
-ror eax,7h
-ror dword ptr [edi+0Ch],0Bh
-add eax,dword ptr [esi+70h]
-add dword ptr [edi+0Ch],eax
-mov ecx,dword ptr [edi]
-mov eax,dword ptr [edi+1Ch]
-and ecx,dword ptr [edi+10h]
-mov ebx,dword ptr [edi+4h]
-xor ecx,eax
-and ebx,dword ptr [edi+0Ch]
-xor eax,dword ptr [edi+18h]
-xor ebx,ecx
-and eax,dword ptr [edi+14h]
-xor eax,ebx
-ror eax,7h
-ror dword ptr [edi+8h],0Bh
-add eax,dword ptr [esi+74h]
-add dword ptr [edi+8h],eax
-mov ecx,dword ptr [edi+1Ch]
-mov eax,dword ptr [edi+18h]
-and ecx,dword ptr [edi+0Ch]
-mov ebx,dword ptr [edi]
-xor ecx,eax
-and ebx,dword ptr [edi+8h]
-xor eax,dword ptr [edi+14h]
-xor ebx,ecx
-and eax,dword ptr [edi+10h]
-xor eax,ebx
-ror eax,7h
-ror dword ptr [edi+4h],0Bh
-add eax,dword ptr [esi+78h]
-add dword ptr [edi+4h],eax
-mov ecx,dword ptr [edi+18h]
-mov eax,dword ptr [edi+14h]
-and ecx,dword ptr [edi+8h]
-mov ebx,dword ptr [edi+1Ch]
-xor ecx,eax
-and ebx,dword ptr [edi+4h]
-xor eax,dword ptr [edi+10h]
-xor ebx,ecx
-and eax,dword ptr [edi+0Ch]
-xor eax,ebx
-ror eax,7h
-ror dword ptr [edi],0Bh
-add eax,dword ptr [esi+7Ch]
-add dword ptr [edi],eax
-mov ebx,dword ptr [edi+4h]
-mov eax,dword ptr [edi]
-mov edx,dword ptr [edi+8h]
-not eax
-and ebx,edx
-and eax,dword ptr [edi+0Ch]
-xor ebx,dword ptr [edi+18h]
-xor eax,dword ptr [edi+10h]
-mov ecx,edx
-xor eax,ebx
-xor ecx,dword ptr [edi+0Ch]
-and eax,dword ptr [edi+14h]
-and ecx,dword ptr [edi+4h]
-and edx,dword ptr [edi]
-xor eax,ecx
-xor edx,dword ptr [edi+18h]
-xor eax,edx
-ror eax,7h
-ror dword ptr [edi+1Ch],0Bh
-add eax,dword ptr [esi+14h]
-add eax,452821E6h
-add dword ptr [edi+1Ch],eax
-mov ebx,dword ptr [edi]
-mov eax,dword ptr [edi+1Ch]
-mov edx,dword ptr [edi+4h]
-not eax
-and ebx,edx
-and eax,dword ptr [edi+8h]
-xor ebx,dword ptr [edi+14h]
-xor eax,dword ptr [edi+0Ch]
-mov ecx,edx
-xor eax,ebx
-xor ecx,dword ptr [edi+8h]
-and eax,dword ptr [edi+10h]
-and ecx,dword ptr [edi]
-and edx,dword ptr [edi+1Ch]
-xor eax,ecx
-xor edx,dword ptr [edi+14h]
-xor eax,edx
-ror eax,7h
-ror dword ptr [edi+18h],0Bh
-add eax,dword ptr [esi+38h]
-add eax,38D01377h
-add dword ptr [edi+18h],eax
-mov ebx,dword ptr [edi+1Ch]
-mov eax,dword ptr [edi+18h]
-mov edx,dword ptr [edi]
-not eax
-and ebx,edx
-and eax,dword ptr [edi+4h]
-xor ebx,dword ptr [edi+10h]
-xor eax,dword ptr [edi+8h]
-mov ecx,edx
-xor eax,ebx
-xor ecx,dword ptr [edi+4h]
-and eax,dword ptr [edi+0Ch]
-and ecx,dword ptr [edi+1Ch]
-and edx,dword ptr [edi+18h]
-xor eax,ecx
-xor edx,dword ptr [edi+10h]
-xor eax,edx
-ror eax,7h
-ror dword ptr [edi+14h],0Bh
-add eax,dword ptr [esi+68h]
-add eax,0BE5466CFh
-add dword ptr [edi+14h],eax
-mov ebx,dword ptr [edi+18h]
-mov eax,dword ptr [edi+14h]
-mov edx,dword ptr [edi+1Ch]
-not eax
-and ebx,edx
-and eax,dword ptr [edi]
-xor ebx,dword ptr [edi+0Ch]
-xor eax,dword ptr [edi+4h]
-mov ecx,edx
-xor eax,ebx
-xor ecx,dword ptr [edi]
-and eax,dword ptr [edi+8h]
-and ecx,dword ptr [edi+18h]
-and edx,dword ptr [edi+14h]
-xor eax,ecx
-xor edx,dword ptr [edi+0Ch]
-xor eax,edx
-ror eax,7h
-ror dword ptr [edi+10h],0Bh
-add eax,dword ptr [esi+48h]
-add eax,34E90C6Ch
-add dword ptr [edi+10h],eax
-mov ebx,dword ptr [edi+14h]
-mov eax,dword ptr [edi+10h]
-mov edx,dword ptr [edi+18h]
-not eax
-and ebx,edx
-and eax,dword ptr [edi+1Ch]
-xor ebx,dword ptr [edi+8h]
-xor eax,dword ptr [edi]
-mov ecx,edx
-xor eax,ebx
-xor ecx,dword ptr [edi+1Ch]
-and eax,dword ptr [edi+4h]
-and ecx,dword ptr [edi+14h]
-and edx,dword ptr [edi+10h]
-xor eax,ecx
-xor edx,dword ptr [edi+8h]
-xor eax,edx
-ror eax,7h
-ror dword ptr [edi+0Ch],0Bh
-add eax,dword ptr [esi+2Ch]
-add eax,0C0AC29B7h
-add dword ptr [edi+0Ch],eax
-mov ebx,dword ptr [edi+10h]
-mov eax,dword ptr [edi+0Ch]
-mov edx,dword ptr [edi+14h]
-not eax
-and ebx,edx
-and eax,dword ptr [edi+18h]
-xor ebx,dword ptr [edi+4h]
-xor eax,dword ptr [edi+1Ch]
-mov ecx,edx
-xor eax,ebx
-xor ecx,dword ptr [edi+18h]
-and eax,dword ptr [edi]
-and ecx,dword ptr [edi+10h]
-and edx,dword ptr [edi+0Ch]
-xor eax,ecx
-xor edx,dword ptr [edi+4h]
-xor eax,edx
-ror eax,7h
-ror dword ptr [edi+8h],0Bh
-add eax,dword ptr [esi+70h]
-add eax,0C97C50DDh
-add dword ptr [edi+8h],eax
-mov ebx,dword ptr [edi+0Ch]
-mov eax,dword ptr [edi+8h]
-mov edx,dword ptr [edi+10h]
-not eax
-and ebx,edx
-and eax,dword ptr [edi+14h]
-xor ebx,dword ptr [edi]
-xor eax,dword ptr [edi+18h]
-mov ecx,edx
-xor eax,ebx
-xor ecx,dword ptr [edi+14h]
-and eax,dword ptr [edi+1Ch]
-and ecx,dword ptr [edi+0Ch]
-and edx,dword ptr [edi+8h]
-xor eax,ecx
-xor edx,dword ptr [edi]
-xor eax,edx
-ror eax,7h
-ror dword ptr [edi+4h],0Bh
-add eax,dword ptr [esi+1Ch]
-add eax,3F84D5B5h
-add dword ptr [edi+4h],eax
-mov ebx,dword ptr [edi+8h]
-mov eax,dword ptr [edi+4h]
-mov edx,dword ptr [edi+0Ch]
-not eax
-and ebx,edx
-and eax,dword ptr [edi+10h]
-xor ebx,dword ptr [edi+1Ch]
-xor eax,dword ptr [edi+14h]
-mov ecx,edx
-xor eax,ebx
-xor ecx,dword ptr [edi+10h]
-and eax,dword ptr [edi+18h]
-and ecx,dword ptr [edi+8h]
-and edx,dword ptr [edi+4h]
-xor eax,ecx
-xor edx,dword ptr [edi+1Ch]
-xor eax,edx
-ror eax,7h
-ror dword ptr [edi],0Bh
-add eax,dword ptr [esi+40h]
-add eax,0B5470917h
-add dword ptr [edi],eax
-mov ebx,dword ptr [edi+4h]
-mov eax,dword ptr [edi]
-mov edx,dword ptr [edi+8h]
-not eax
-and ebx,edx
-and eax,dword ptr [edi+0Ch]
-xor ebx,dword ptr [edi+18h]
-xor eax,dword ptr [edi+10h]
-mov ecx,edx
-xor eax,ebx
-xor ecx,dword ptr [edi+0Ch]
-and eax,dword ptr [edi+14h]
-and ecx,dword ptr [edi+4h]
-and edx,dword ptr [edi]
-xor eax,ecx
-xor edx,dword ptr [edi+18h]
-xor eax,edx
-ror eax,7h
-ror dword ptr [edi+1Ch],0Bh
-add eax,dword ptr [esi]
-add eax,9216D5D9h
-add dword ptr [edi+1Ch],eax
-mov ebx,dword ptr [edi]
-mov eax,dword ptr [edi+1Ch]
-mov edx,dword ptr [edi+4h]
-not eax
-and ebx,edx
-and eax,dword ptr [edi+8h]
-xor ebx,dword ptr [edi+14h]
-xor eax,dword ptr [edi+0Ch]
-mov ecx,edx
-xor eax,ebx
-xor ecx,dword ptr [edi+8h]
-and eax,dword ptr [edi+10h]
-and ecx,dword ptr [edi]
-and edx,dword ptr [edi+1Ch]
-xor eax,ecx
-xor edx,dword ptr [edi+14h]
-xor eax,edx
-ror eax,7h
-ror dword ptr [edi+18h],0Bh
-add eax,dword ptr [esi+5Ch]
-add eax,8979FB1Bh
-add dword ptr [edi+18h],eax
-mov ebx,dword ptr [edi+1Ch]
-mov eax,dword ptr [edi+18h]
-mov edx,dword ptr [edi]
-not eax
-and ebx,edx
-and eax,dword ptr [edi+4h]
-xor ebx,dword ptr [edi+10h]
-xor eax,dword ptr [edi+8h]
-mov ecx,edx
-xor eax,ebx
-xor ecx,dword ptr [edi+4h]
-and eax,dword ptr [edi+0Ch]
-and ecx,dword ptr [edi+1Ch]
-and edx,dword ptr [edi+18h]
-xor eax,ecx
-xor edx,dword ptr [edi+10h]
-xor eax,edx
-ror eax,7h
-ror dword ptr [edi+14h],0Bh
-add eax,dword ptr [esi+50h]
-add eax,0D1310BA6h
-add dword ptr [edi+14h],eax
-mov ebx,dword ptr [edi+18h]
-mov eax,dword ptr [edi+14h]
-mov edx,dword ptr [edi+1Ch]
-not eax
-and ebx,edx
-and eax,dword ptr [edi]
-xor ebx,dword ptr [edi+0Ch]
-xor eax,dword ptr [edi+4h]
-mov ecx,edx
-xor eax,ebx
-xor ecx,dword ptr [edi]
-and eax,dword ptr [edi+8h]
-and ecx,dword ptr [edi+18h]
-and edx,dword ptr [edi+14h]
-xor eax,ecx
-xor edx,dword ptr [edi+0Ch]
-xor eax,edx
-ror eax,7h
-ror dword ptr [edi+10h],0Bh
-add eax,dword ptr [esi+58h]
-add eax,98DFB5ACh
-add dword ptr [edi+10h],eax
-mov ebx,dword ptr [edi+14h]
-mov eax,dword ptr [edi+10h]
-mov edx,dword ptr [edi+18h]
-not eax
-and ebx,edx
-and eax,dword ptr [edi+1Ch]
-xor ebx,dword ptr [edi+8h]
-xor eax,dword ptr [edi]
-mov ecx,edx
-xor eax,ebx
-xor ecx,dword ptr [edi+1Ch]
-and eax,dword ptr [edi+4h]
-and ecx,dword ptr [edi+14h]
-and edx,dword ptr [edi+10h]
-xor eax,ecx
-xor edx,dword ptr [edi+8h]
-xor eax,edx
-ror eax,7h
-ror dword ptr [edi+0Ch],0Bh
-add eax,dword ptr [esi+4h]
-add eax,2FFD72DBh
-add dword ptr [edi+0Ch],eax
-mov ebx,dword ptr [edi+10h]
-mov eax,dword ptr [edi+0Ch]
-mov edx,dword ptr [edi+14h]
-not eax
-and ebx,edx
-and eax,dword ptr [edi+18h]
-xor ebx,dword ptr [edi+4h]
-xor eax,dword ptr [edi+1Ch]
-mov ecx,edx
-xor eax,ebx
-xor ecx,dword ptr [edi+18h]
-and eax,dword ptr [edi]
-and ecx,dword ptr [edi+10h]
-and edx,dword ptr [edi+0Ch]
-xor eax,ecx
-xor edx,dword ptr [edi+4h]
-xor eax,edx
-ror eax,7h
-ror dword ptr [edi+8h],0Bh
-add eax,dword ptr [esi+28h]
-add eax,0D01ADFB7h
-add dword ptr [edi+8h],eax
-mov ebx,dword ptr [edi+0Ch]
-mov eax,dword ptr [edi+8h]
-mov edx,dword ptr [edi+10h]
-not eax
-and ebx,edx
-and eax,dword ptr [edi+14h]
-xor ebx,dword ptr [edi]
-xor eax,dword ptr [edi+18h]
-mov ecx,edx
-xor eax,ebx
-xor ecx,dword ptr [edi+14h]
-and eax,dword ptr [edi+1Ch]
-and ecx,dword ptr [edi+0Ch]
-and edx,dword ptr [edi+8h]
-xor eax,ecx
-xor edx,dword ptr [edi]
-xor eax,edx
-ror eax,7h
-ror dword ptr [edi+4h],0Bh
-add eax,dword ptr [esi+10h]
-add eax,0B8E1AFEDh
-add dword ptr [edi+4h],eax
-mov ebx,dword ptr [edi+8h]
-mov eax,dword ptr [edi+4h]
-mov edx,dword ptr [edi+0Ch]
-not eax
-and ebx,edx
-and eax,dword ptr [edi+10h]
-xor ebx,dword ptr [edi+1Ch]
-xor eax,dword ptr [edi+14h]
-mov ecx,edx
-xor eax,ebx
-xor ecx,dword ptr [edi+10h]
-and eax,dword ptr [edi+18h]
-and ecx,dword ptr [edi+8h]
-and edx,dword ptr [edi+4h]
-xor eax,ecx
-xor edx,dword ptr [edi+1Ch]
-xor eax,edx
-ror eax,7h
-ror dword ptr [edi],0Bh
-add eax,dword ptr [esi+20h]
-add eax,6A267E96h
-add dword ptr [edi],eax
-mov ebx,dword ptr [edi+4h]
-mov eax,dword ptr [edi]
-mov edx,dword ptr [edi+8h]
-not eax
-and ebx,edx
-and eax,dword ptr [edi+0Ch]
-xor ebx,dword ptr [edi+18h]
-xor eax,dword ptr [edi+10h]
-mov ecx,edx
-xor eax,ebx
-xor ecx,dword ptr [edi+0Ch]
-and eax,dword ptr [edi+14h]
-and ecx,dword ptr [edi+4h]
-and edx,dword ptr [edi]
-xor eax,ecx
-xor edx,dword ptr [edi+18h]
-xor eax,edx
-ror eax,7h
-ror dword ptr [edi+1Ch],0Bh
-add eax,dword ptr [esi+78h]
-add eax,0BA7C9045h
-add dword ptr [edi+1Ch],eax
-mov ebx,dword ptr [edi]
-mov eax,dword ptr [edi+1Ch]
-mov edx,dword ptr [edi+4h]
-not eax
-and ebx,edx
-and eax,dword ptr [edi+8h]
-xor ebx,dword ptr [edi+14h]
-xor eax,dword ptr [edi+0Ch]
-mov ecx,edx
-xor eax,ebx
-xor ecx,dword ptr [edi+8h]
-and eax,dword ptr [edi+10h]
-and ecx,dword ptr [edi]
-and edx,dword ptr [edi+1Ch]
-xor eax,ecx
-xor edx,dword ptr [edi+14h]
-xor eax,edx
-ror eax,7h
-ror dword ptr [edi+18h],0Bh
-add eax,dword ptr [esi+0Ch]
-add eax,0F12C7F99h
-add dword ptr [edi+18h],eax
-mov ebx,dword ptr [edi+1Ch]
-mov eax,dword ptr [edi+18h]
-mov edx,dword ptr [edi]
-not eax
-and ebx,edx
-and eax,dword ptr [edi+4h]
-xor ebx,dword ptr [edi+10h]
-xor eax,dword ptr [edi+8h]
-mov ecx,edx
-xor eax,ebx
-xor ecx,dword ptr [edi+4h]
-and eax,dword ptr [edi+0Ch]
-and ecx,dword ptr [edi+1Ch]
-and edx,dword ptr [edi+18h]
-xor eax,ecx
-xor edx,dword ptr [edi+10h]
-xor eax,edx
-ror eax,7h
-ror dword ptr [edi+14h],0Bh
-add eax,dword ptr [esi+54h]
-add eax,24A19947h
-add dword ptr [edi+14h],eax
-mov ebx,dword ptr [edi+18h]
-mov eax,dword ptr [edi+14h]
-mov edx,dword ptr [edi+1Ch]
-not eax
-and ebx,edx
-and eax,dword ptr [edi]
-xor ebx,dword ptr [edi+0Ch]
-xor eax,dword ptr [edi+4h]
-mov ecx,edx
-xor eax,ebx
-xor ecx,dword ptr [edi]
-and eax,dword ptr [edi+8h]
-and ecx,dword ptr [edi+18h]
-and edx,dword ptr [edi+14h]
-xor eax,ecx
-xor edx,dword ptr [edi+0Ch]
-xor eax,edx
-ror eax,7h
-ror dword ptr [edi+10h],0Bh
-add eax,dword ptr [esi+24h]
-add eax,0B3916CF7h
-add dword ptr [edi+10h],eax
-mov ebx,dword ptr [edi+14h]
-mov eax,dword ptr [edi+10h]
-mov edx,dword ptr [edi+18h]
-not eax
-and ebx,edx
-and eax,dword ptr [edi+1Ch]
-xor ebx,dword ptr [edi+8h]
-xor eax,dword ptr [edi]
-mov ecx,edx
-xor eax,ebx
-xor ecx,dword ptr [edi+1Ch]
-and eax,dword ptr [edi+4h]
-and ecx,dword ptr [edi+14h]
-and edx,dword ptr [edi+10h]
-xor eax,ecx
-xor edx,dword ptr [edi+8h]
-xor eax,edx
-ror eax,7h
-ror dword ptr [edi+0Ch],0Bh
-add eax,dword ptr [esi+44h]
-add eax,801F2E2h
-add dword ptr [edi+0Ch],eax
-mov ebx,dword ptr [edi+10h]
-mov eax,dword ptr [edi+0Ch]
-mov edx,dword ptr [edi+14h]
-not eax
-and ebx,edx
-and eax,dword ptr [edi+18h]
-xor ebx,dword ptr [edi+4h]
-xor eax,dword ptr [edi+1Ch]
-mov ecx,edx
-xor eax,ebx
-xor ecx,dword ptr [edi+18h]
-and eax,dword ptr [edi]
-and ecx,dword ptr [edi+10h]
-and edx,dword ptr [edi+0Ch]
-xor eax,ecx
-xor edx,dword ptr [edi+4h]
-xor eax,edx
-ror eax,7h
-ror dword ptr [edi+8h],0Bh
-add eax,dword ptr [esi+60h]
-add eax,858EFC16h
-add dword ptr [edi+8h],eax
-mov ebx,dword ptr [edi+0Ch]
-mov eax,dword ptr [edi+8h]
-mov edx,dword ptr [edi+10h]
-not eax
-and ebx,edx
-and eax,dword ptr [edi+14h]
-xor ebx,dword ptr [edi]
-xor eax,dword ptr [edi+18h]
-mov ecx,edx
-xor eax,ebx
-xor ecx,dword ptr [edi+14h]
-and eax,dword ptr [edi+1Ch]
-and ecx,dword ptr [edi+0Ch]
-and edx,dword ptr [edi+8h]
-xor eax,ecx
-xor edx,dword ptr [edi]
-xor eax,edx
-ror eax,7h
-ror dword ptr [edi+4h],0Bh
-add eax,dword ptr [esi+74h]
-add eax,636920D8h
-add dword ptr [edi+4h],eax
-mov ebx,dword ptr [edi+8h]
-mov eax,dword ptr [edi+4h]
-mov edx,dword ptr [edi+0Ch]
-not eax
-and ebx,edx
-and eax,dword ptr [edi+10h]
-xor ebx,dword ptr [edi+1Ch]
-xor eax,dword ptr [edi+14h]
-mov ecx,edx
-xor eax,ebx
-xor ecx,dword ptr [edi+10h]
-and eax,dword ptr [edi+18h]
-and ecx,dword ptr [edi+8h]
-and edx,dword ptr [edi+4h]
-xor eax,ecx
-xor edx,dword ptr [edi+1Ch]
-xor eax,edx
-ror eax,7h
-ror dword ptr [edi],0Bh
-add eax,dword ptr [esi+18h]
-add eax,71574E69h
-add dword ptr [edi],eax
-mov ebx,dword ptr [edi+4h]
-mov eax,dword ptr [edi]
-mov edx,dword ptr [edi+8h]
-not eax
-and ebx,edx
-and eax,dword ptr [edi+0Ch]
-xor ebx,dword ptr [edi+18h]
-xor eax,dword ptr [edi+10h]
-mov ecx,edx
-xor eax,ebx
-xor ecx,dword ptr [edi+0Ch]
-and eax,dword ptr [edi+14h]
-and ecx,dword ptr [edi+4h]
-and edx,dword ptr [edi]
-xor eax,ecx
-xor edx,dword ptr [edi+18h]
-xor eax,edx
-ror eax,7h
-ror dword ptr [edi+1Ch],0Bh
-add eax,dword ptr [esi+4Ch]
-add eax,0A458FEA3h
-add dword ptr [edi+1Ch],eax
-mov ebx,dword ptr [edi]
-mov eax,dword ptr [edi+1Ch]
-mov edx,dword ptr [edi+4h]
-not eax
-and ebx,edx
-and eax,dword ptr [edi+8h]
-xor ebx,dword ptr [edi+14h]
-xor eax,dword ptr [edi+0Ch]
-mov ecx,edx
-xor eax,ebx
-xor ecx,dword ptr [edi+8h]
-and eax,dword ptr [edi+10h]
-and ecx,dword ptr [edi]
-and edx,dword ptr [edi+1Ch]
-xor eax,ecx
-xor edx,dword ptr [edi+14h]
-xor eax,edx
-ror eax,7h
-ror dword ptr [edi+18h],0Bh
-add eax,dword ptr [esi+30h]
-add eax,0F4933D7Eh
-add dword ptr [edi+18h],eax
-mov ebx,dword ptr [edi+1Ch]
-mov eax,dword ptr [edi+18h]
-mov edx,dword ptr [edi]
-not eax
-and ebx,edx
-and eax,dword ptr [edi+4h]
-xor ebx,dword ptr [edi+10h]
-xor eax,dword ptr [edi+8h]
-mov ecx,edx
-xor eax,ebx
-xor ecx,dword ptr [edi+4h]
-and eax,dword ptr [edi+0Ch]
-and ecx,dword ptr [edi+1Ch]
-and edx,dword ptr [edi+18h]
-xor eax,ecx
-xor edx,dword ptr [edi+10h]
-xor eax,edx
-ror eax,7h
-ror dword ptr [edi+14h],0Bh
-add eax,dword ptr [esi+3Ch]
-add eax,0D95748Fh
-add dword ptr [edi+14h],eax
-mov ebx,dword ptr [edi+18h]
-mov eax,dword ptr [edi+14h]
-mov edx,dword ptr [edi+1Ch]
-not eax
-and ebx,edx
-and eax,dword ptr [edi]
-xor ebx,dword ptr [edi+0Ch]
-xor eax,dword ptr [edi+4h]
-mov ecx,edx
-xor eax,ebx
-xor ecx,dword ptr [edi]
-and eax,dword ptr [edi+8h]
-and ecx,dword ptr [edi+18h]
-and edx,dword ptr [edi+14h]
-xor eax,ecx
-xor edx,dword ptr [edi+0Ch]
-xor eax,edx
-ror eax,7h
-ror dword ptr [edi+10h],0Bh
-add eax,dword ptr [esi+34h]
-add eax,728EB658h
-add dword ptr [edi+10h],eax
-mov ebx,dword ptr [edi+14h]
-mov eax,dword ptr [edi+10h]
-mov edx,dword ptr [edi+18h]
-not eax
-and ebx,edx
-and eax,dword ptr [edi+1Ch]
-xor ebx,dword ptr [edi+8h]
-xor eax,dword ptr [edi]
-mov ecx,edx
-xor eax,ebx
-xor ecx,dword ptr [edi+1Ch]
-and eax,dword ptr [edi+4h]
-and ecx,dword ptr [edi+14h]
-and edx,dword ptr [edi+10h]
-xor eax,ecx
-xor edx,dword ptr [edi+8h]
-xor eax,edx
-ror eax,7h
-ror dword ptr [edi+0Ch],0Bh
-add eax,dword ptr [esi+8h]
-add eax,718BCD58h
-add dword ptr [edi+0Ch],eax
-mov ebx,dword ptr [edi+10h]
-mov eax,dword ptr [edi+0Ch]
-mov edx,dword ptr [edi+14h]
-not eax
-and ebx,edx
-and eax,dword ptr [edi+18h]
-xor ebx,dword ptr [edi+4h]
-xor eax,dword ptr [edi+1Ch]
-mov ecx,edx
-xor eax,ebx
-xor ecx,dword ptr [edi+18h]
-and eax,dword ptr [edi]
-and ecx,dword ptr [edi+10h]
-and edx,dword ptr [edi+0Ch]
-xor eax,ecx
-xor edx,dword ptr [edi+4h]
-xor eax,edx
-ror eax,7h
-ror dword ptr [edi+8h],0Bh
-add eax,dword ptr [esi+64h]
-add eax,82154AEEh
-add dword ptr [edi+8h],eax
-mov ebx,dword ptr [edi+0Ch]
-mov eax,dword ptr [edi+8h]
-mov edx,dword ptr [edi+10h]
-not eax
-and ebx,edx
-and eax,dword ptr [edi+14h]
-xor ebx,dword ptr [edi]
-xor eax,dword ptr [edi+18h]
-mov ecx,edx
-xor eax,ebx
-xor ecx,dword ptr [edi+14h]
-and eax,dword ptr [edi+1Ch]
-and ecx,dword ptr [edi+0Ch]
-and edx,dword ptr [edi+8h]
-xor eax,ecx
-xor edx,dword ptr [edi]
-xor eax,edx
-ror eax,7h
-ror dword ptr [edi+4h],0Bh
-add eax,dword ptr [esi+7Ch]
-add eax,7B54A41Dh
-add dword ptr [edi+4h],eax
-mov ebx,dword ptr [edi+8h]
-mov eax,dword ptr [edi+4h]
-mov edx,dword ptr [edi+0Ch]
-not eax
-and ebx,edx
-and eax,dword ptr [edi+10h]
-xor ebx,dword ptr [edi+1Ch]
-xor eax,dword ptr [edi+14h]
-mov ecx,edx
-xor eax,ebx
-xor ecx,dword ptr [edi+10h]
-and eax,dword ptr [edi+18h]
-and ecx,dword ptr [edi+8h]
-and edx,dword ptr [edi+4h]
-xor eax,ecx
-xor edx,dword ptr [edi+1Ch]
-xor eax,edx
-ror eax,7h
-ror dword ptr [edi],0Bh
-add eax,dword ptr [esi+6Ch]
-add eax,0C25A59B5h
-add dword ptr [edi],eax
-mov edx,dword ptr [edi+14h]
-mov eax,dword ptr [edi+4h]
-and edx,dword ptr [edi+10h]
-mov ebx,dword ptr [edi+14h]
-and eax,dword ptr [edi+10h]
-xor edx,dword ptr [edi+18h]
-xor eax,dword ptr [edi]
-and ebx,dword ptr [edi+8h]
-xor edx,dword ptr [edi]
-xor eax,ebx
-and edx,dword ptr [edi+0Ch]
-xor eax,edx
-ror eax,7h
-ror dword ptr [edi+1Ch],0Bh
-add eax,dword ptr [esi+4Ch]
-add eax,9C30D539h
-add dword ptr [edi+1Ch],eax
-mov edx,dword ptr [edi+10h]
-mov eax,dword ptr [edi]
-and edx,dword ptr [edi+0Ch]
-mov ebx,dword ptr [edi+10h]
-and eax,dword ptr [edi+0Ch]
-xor edx,dword ptr [edi+14h]
-xor eax,dword ptr [edi+1Ch]
-and ebx,dword ptr [edi+4h]
-xor edx,dword ptr [edi+1Ch]
-xor eax,ebx
-and edx,dword ptr [edi+8h]
-xor eax,edx
-ror eax,7h
-ror dword ptr [edi+18h],0Bh
-add eax,dword ptr [esi+24h]
-add eax,2AF26013h
-add dword ptr [edi+18h],eax
-mov edx,dword ptr [edi+0Ch]
-mov eax,dword ptr [edi+1Ch]
-and edx,dword ptr [edi+8h]
-mov ebx,dword ptr [edi+0Ch]
-and eax,dword ptr [edi+8h]
-xor edx,dword ptr [edi+10h]
-xor eax,dword ptr [edi+18h]
-and ebx,dword ptr [edi]
-xor edx,dword ptr [edi+18h]
-xor eax,ebx
-and edx,dword ptr [edi+4h]
-xor eax,edx
-ror eax,7h
-ror dword ptr [edi+14h],0Bh
-add eax,dword ptr [esi+10h]
-add eax,0C5D1B023h
-add dword ptr [edi+14h],eax
-mov edx,dword ptr [edi+8h]
-mov eax,dword ptr [edi+18h]
-and edx,dword ptr [edi+4h]
-mov ebx,dword ptr [edi+8h]
-and eax,dword ptr [edi+4h]
-xor edx,dword ptr [edi+0Ch]
-xor eax,dword ptr [edi+14h]
-and ebx,dword ptr [edi+1Ch]
-xor edx,dword ptr [edi+14h]
-xor eax,ebx
-and edx,dword ptr [edi]
-xor eax,edx
-ror eax,7h
-ror dword ptr [edi+10h],0Bh
-add eax,dword ptr [esi+50h]
-add eax,286085F0h
-add dword ptr [edi+10h],eax
-mov edx,dword ptr [edi+4h]
-mov eax,dword ptr [edi+14h]
-and edx,dword ptr [edi]
-mov ebx,dword ptr [edi+4h]
-and eax,dword ptr [edi]
-xor edx,dword ptr [edi+8h]
-xor eax,dword ptr [edi+10h]
-and ebx,dword ptr [edi+18h]
-xor edx,dword ptr [edi+10h]
-xor eax,ebx
-and edx,dword ptr [edi+1Ch]
-xor eax,edx
-ror eax,7h
-ror dword ptr [edi+0Ch],0Bh
-add eax,dword ptr [esi+70h]
-add eax,0CA417918h
-add dword ptr [edi+0Ch],eax
-mov edx,dword ptr [edi]
-mov eax,dword ptr [edi+10h]
-and edx,dword ptr [edi+1Ch]
-mov ebx,dword ptr [edi]
-and eax,dword ptr [edi+1Ch]
-xor edx,dword ptr [edi+4h]
-xor eax,dword ptr [edi+0Ch]
-and ebx,dword ptr [edi+14h]
-xor edx,dword ptr [edi+0Ch]
-xor eax,ebx
-and edx,dword ptr [edi+18h]
-xor eax,edx
-ror eax,7h
-ror dword ptr [edi+8h],0Bh
-add eax,dword ptr [esi+44h]
-add eax,0B8DB38EFh
-add dword ptr [edi+8h],eax
-mov edx,dword ptr [edi+1Ch]
-mov eax,dword ptr [edi+0Ch]
-and edx,dword ptr [edi+18h]
-mov ebx,dword ptr [edi+1Ch]
-and eax,dword ptr [edi+18h]
-xor edx,dword ptr [edi]
-xor eax,dword ptr [edi+8h]
-and ebx,dword ptr [edi+10h]
-xor edx,dword ptr [edi+8h]
-xor eax,ebx
-and edx,dword ptr [edi+14h]
-xor eax,edx
-ror eax,7h
-ror dword ptr [edi+4h],0Bh
-add eax,dword ptr [esi+20h]
-add eax,8E79DCB0h
-add dword ptr [edi+4h],eax
-mov edx,dword ptr [edi+18h]
-mov eax,dword ptr [edi+8h]
-and edx,dword ptr [edi+14h]
-mov ebx,dword ptr [edi+18h]
-and eax,dword ptr [edi+14h]
-xor edx,dword ptr [edi+1Ch]
-xor eax,dword ptr [edi+4h]
-and ebx,dword ptr [edi+0Ch]
-xor edx,dword ptr [edi+4h]
-xor eax,ebx
-and edx,dword ptr [edi+10h]
-xor eax,edx
-ror eax,7h
-ror dword ptr [edi],0Bh
-add eax,dword ptr [esi+58h]
-add eax,603A180Eh
-add dword ptr [edi],eax
-mov edx,dword ptr [edi+14h]
-mov eax,dword ptr [edi+4h]
-and edx,dword ptr [edi+10h]
-mov ebx,dword ptr [edi+14h]
-and eax,dword ptr [edi+10h]
-xor edx,dword ptr [edi+18h]
-xor eax,dword ptr [edi]
-and ebx,dword ptr [edi+8h]
-xor edx,dword ptr [edi]
-xor eax,ebx
-and edx,dword ptr [edi+0Ch]
-xor eax,edx
-ror eax,7h
-ror dword ptr [edi+1Ch],0Bh
-add eax,dword ptr [esi+74h]
-add eax,6C9E0E8Bh
-add dword ptr [edi+1Ch],eax
-mov edx,dword ptr [edi+10h]
-mov eax,dword ptr [edi]
-and edx,dword ptr [edi+0Ch]
-mov ebx,dword ptr [edi+10h]
-and eax,dword ptr [edi+0Ch]
-xor edx,dword ptr [edi+14h]
-xor eax,dword ptr [edi+1Ch]
-and ebx,dword ptr [edi+4h]
-xor edx,dword ptr [edi+1Ch]
-xor eax,ebx
-and edx,dword ptr [edi+8h]
-xor eax,edx
-ror eax,7h
-ror dword ptr [edi+18h],0Bh
-add eax,dword ptr [esi+38h]
-add eax,0B01E8A3Eh
-add dword ptr [edi+18h],eax
-mov edx,dword ptr [edi+0Ch]
-mov eax,dword ptr [edi+1Ch]
-and edx,dword ptr [edi+8h]
-mov ebx,dword ptr [edi+0Ch]
-and eax,dword ptr [edi+8h]
-xor edx,dword ptr [edi+10h]
-xor eax,dword ptr [edi+18h]
-and ebx,dword ptr [edi]
-xor edx,dword ptr [edi+18h]
-xor eax,ebx
-and edx,dword ptr [edi+4h]
-xor eax,edx
-ror eax,7h
-ror dword ptr [edi+14h],0Bh
-add eax,dword ptr [esi+64h]
-add eax,0D71577C1h
-add dword ptr [edi+14h],eax
-mov edx,dword ptr [edi+8h]
-mov eax,dword ptr [edi+18h]
-and edx,dword ptr [edi+4h]
-mov ebx,dword ptr [edi+8h]
-and eax,dword ptr [edi+4h]
-xor edx,dword ptr [edi+0Ch]
-xor eax,dword ptr [edi+14h]
-and ebx,dword ptr [edi+1Ch]
-xor edx,dword ptr [edi+14h]
-xor eax,ebx
-and edx,dword ptr [edi]
-xor eax,edx
-ror eax,7h
-ror dword ptr [edi+10h],0Bh
-add eax,dword ptr [esi+30h]
-add eax,0BD314B27h
-add dword ptr [edi+10h],eax
-mov edx,dword ptr [edi+4h]
-mov eax,dword ptr [edi+14h]
-and edx,dword ptr [edi]
-mov ebx,dword ptr [edi+4h]
-and eax,dword ptr [edi]
-xor edx,dword ptr [edi+8h]
-xor eax,dword ptr [edi+10h]
-and ebx,dword ptr [edi+18h]
-xor edx,dword ptr [edi+10h]
-xor eax,ebx
-and edx,dword ptr [edi+1Ch]
-xor eax,edx
-ror eax,7h
-ror dword ptr [edi+0Ch],0Bh
-add eax,dword ptr [esi+60h]
-add eax,78AF2FDAh
-add dword ptr [edi+0Ch],eax
-mov edx,dword ptr [edi]
-mov eax,dword ptr [edi+10h]
-and edx,dword ptr [edi+1Ch]
-mov ebx,dword ptr [edi]
-and eax,dword ptr [edi+1Ch]
-xor edx,dword ptr [edi+4h]
-xor eax,dword ptr [edi+0Ch]
-and ebx,dword ptr [edi+14h]
-xor edx,dword ptr [edi+0Ch]
-xor eax,ebx
-and edx,dword ptr [edi+18h]
-xor eax,edx
-ror eax,7h
-ror dword ptr [edi+8h],0Bh
-add eax,dword ptr [esi+78h]
-add eax,55605C60h
-add dword ptr [edi+8h],eax
-mov edx,dword ptr [edi+1Ch]
-mov eax,dword ptr [edi+0Ch]
-and edx,dword ptr [edi+18h]
-mov ebx,dword ptr [edi+1Ch]
-and eax,dword ptr [edi+18h]
-xor edx,dword ptr [edi]
-xor eax,dword ptr [edi+8h]
-and ebx,dword ptr [edi+10h]
-xor edx,dword ptr [edi+8h]
-xor eax,ebx
-and edx,dword ptr [edi+14h]
-xor eax,edx
-ror eax,7h
-ror dword ptr [edi+4h],0Bh
-add eax,dword ptr [esi+40h]
-add eax,0E65525F3h
-add dword ptr [edi+4h],eax
-mov edx,dword ptr [edi+18h]
-mov eax,dword ptr [edi+8h]
-and edx,dword ptr [edi+14h]
-mov ebx,dword ptr [edi+18h]
-and eax,dword ptr [edi+14h]
-xor edx,dword ptr [edi+1Ch]
-xor eax,dword ptr [edi+4h]
-and ebx,dword ptr [edi+0Ch]
-xor edx,dword ptr [edi+4h]
-xor eax,ebx
-and edx,dword ptr [edi+10h]
-xor eax,edx
-ror eax,7h
-ror dword ptr [edi],0Bh
-add eax,dword ptr [esi+68h]
-add eax,0AA55AB94h
-add dword ptr [edi],eax
-mov edx,dword ptr [edi+14h]
-mov eax,dword ptr [edi+4h]
-and edx,dword ptr [edi+10h]
-mov ebx,dword ptr [edi+14h]
-and eax,dword ptr [edi+10h]
-xor edx,dword ptr [edi+18h]
-xor eax,dword ptr [edi]
-and ebx,dword ptr [edi+8h]
-xor edx,dword ptr [edi]
-xor eax,ebx
-and edx,dword ptr [edi+0Ch]
-xor eax,edx
-ror eax,7h
-ror dword ptr [edi+1Ch],0Bh
-add eax,dword ptr [esi+7Ch]
-add eax,57489862h
-add dword ptr [edi+1Ch],eax
-mov edx,dword ptr [edi+10h]
-mov eax,dword ptr [edi]
-and edx,dword ptr [edi+0Ch]
-mov ebx,dword ptr [edi+10h]
-and eax,dword ptr [edi+0Ch]
-xor edx,dword ptr [edi+14h]
-xor eax,dword ptr [edi+1Ch]
-and ebx,dword ptr [edi+4h]
-xor edx,dword ptr [edi+1Ch]
-xor eax,ebx
-and edx,dword ptr [edi+8h]
-xor eax,edx
-ror eax,7h
-ror dword ptr [edi+18h],0Bh
-add eax,dword ptr [esi+3Ch]
-add eax,63E81440h
-add dword ptr [edi+18h],eax
-mov edx,dword ptr [edi+0Ch]
-mov eax,dword ptr [edi+1Ch]
-and edx,dword ptr [edi+8h]
-mov ebx,dword ptr [edi+0Ch]
-and eax,dword ptr [edi+8h]
-xor edx,dword ptr [edi+10h]
-xor eax,dword ptr [edi+18h]
-and ebx,dword ptr [edi]
-xor edx,dword ptr [edi+18h]
-xor eax,ebx
-and edx,dword ptr [edi+4h]
-xor eax,edx
-ror eax,7h
-ror dword ptr [edi+14h],0Bh
-add eax,dword ptr [esi+1Ch]
-add eax,55CA396Ah
-add dword ptr [edi+14h],eax
-mov edx,dword ptr [edi+8h]
-mov eax,dword ptr [edi+18h]
-and edx,dword ptr [edi+4h]
-mov ebx,dword ptr [edi+8h]
-and eax,dword ptr [edi+4h]
-xor edx,dword ptr [edi+0Ch]
-xor eax,dword ptr [edi+14h]
-and ebx,dword ptr [edi+1Ch]
-xor edx,dword ptr [edi+14h]
-xor eax,ebx
-and edx,dword ptr [edi]
-xor eax,edx
-ror eax,7h
-ror dword ptr [edi+10h],0Bh
-add eax,dword ptr [esi+0Ch]
-add eax,2AAB10B6h
-add dword ptr [edi+10h],eax
-mov edx,dword ptr [edi+4h]
-mov eax,dword ptr [edi+14h]
-and edx,dword ptr [edi]
-mov ebx,dword ptr [edi+4h]
-and eax,dword ptr [edi]
-xor edx,dword ptr [edi+8h]
-xor eax,dword ptr [edi+10h]
-and ebx,dword ptr [edi+18h]
-xor edx,dword ptr [edi+10h]
-xor eax,ebx
-and edx,dword ptr [edi+1Ch]
-xor eax,edx
-ror eax,7h
-ror dword ptr [edi+0Ch],0Bh
-add eax,dword ptr [esi+4h]
-add eax,0B4CC5C34h
-add dword ptr [edi+0Ch],eax
-mov edx,dword ptr [edi]
-mov eax,dword ptr [edi+10h]
-and edx,dword ptr [edi+1Ch]
-mov ebx,dword ptr [edi]
-and eax,dword ptr [edi+1Ch]
-xor edx,dword ptr [edi+4h]
-xor eax,dword ptr [edi+0Ch]
-and ebx,dword ptr [edi+14h]
-xor edx,dword ptr [edi+0Ch]
-xor eax,ebx
-and edx,dword ptr [edi+18h]
-xor eax,edx
-ror eax,7h
-ror dword ptr [edi+8h],0Bh
-add eax,dword ptr [esi]
-add eax,1141E8CEh
-add dword ptr [edi+8h],eax
-mov edx,dword ptr [edi+1Ch]
-mov eax,dword ptr [edi+0Ch]
-and edx,dword ptr [edi+18h]
-mov ebx,dword ptr [edi+1Ch]
-and eax,dword ptr [edi+18h]
-xor edx,dword ptr [edi]
-xor eax,dword ptr [edi+8h]
-and ebx,dword ptr [edi+10h]
-xor edx,dword ptr [edi+8h]
-xor eax,ebx
-and edx,dword ptr [edi+14h]
-xor eax,edx
-ror eax,7h
-ror dword ptr [edi+4h],0Bh
-add eax,dword ptr [esi+48h]
-add eax,0A15486AFh
-add dword ptr [edi+4h],eax
-mov edx,dword ptr [edi+18h]
-mov eax,dword ptr [edi+8h]
-and edx,dword ptr [edi+14h]
-mov ebx,dword ptr [edi+18h]
-and eax,dword ptr [edi+14h]
-xor edx,dword ptr [edi+1Ch]
-xor eax,dword ptr [edi+4h]
-and ebx,dword ptr [edi+0Ch]
-xor edx,dword ptr [edi+4h]
-xor eax,ebx
-and edx,dword ptr [edi+10h]
-xor eax,edx
-ror eax,7h
-ror dword ptr [edi],0Bh
-add eax,dword ptr [esi+6Ch]
-add eax,7C72E993h
-add dword ptr [edi],eax
-mov edx,dword ptr [edi+14h]
-mov eax,dword ptr [edi+4h]
-and edx,dword ptr [edi+10h]
-mov ebx,dword ptr [edi+14h]
-and eax,dword ptr [edi+10h]
-xor edx,dword ptr [edi+18h]
-xor eax,dword ptr [edi]
-and ebx,dword ptr [edi+8h]
-xor edx,dword ptr [edi]
-xor eax,ebx
-and edx,dword ptr [edi+0Ch]
-xor eax,edx
-ror eax,7h
-ror dword ptr [edi+1Ch],0Bh
-add eax,dword ptr [esi+34h]
-add eax,0B3EE1411h
-add dword ptr [edi+1Ch],eax
-mov edx,dword ptr [edi+10h]
-mov eax,dword ptr [edi]
-and edx,dword ptr [edi+0Ch]
-mov ebx,dword ptr [edi+10h]
-and eax,dword ptr [edi+0Ch]
-xor edx,dword ptr [edi+14h]
-xor eax,dword ptr [edi+1Ch]
-and ebx,dword ptr [edi+4h]
-xor edx,dword ptr [edi+1Ch]
-xor eax,ebx
-and edx,dword ptr [edi+8h]
-xor eax,edx
-ror eax,7h
-ror dword ptr [edi+18h],0Bh
-add eax,dword ptr [esi+18h]
-add eax,636FBC2Ah
-add dword ptr [edi+18h],eax
-mov edx,dword ptr [edi+0Ch]
-mov eax,dword ptr [edi+1Ch]
-and edx,dword ptr [edi+8h]
-mov ebx,dword ptr [edi+0Ch]
-and eax,dword ptr [edi+8h]
-xor edx,dword ptr [edi+10h]
-xor eax,dword ptr [edi+18h]
-and ebx,dword ptr [edi]
-xor edx,dword ptr [edi+18h]
-xor eax,ebx
-and edx,dword ptr [edi+4h]
-xor eax,edx
-ror eax,7h
-ror dword ptr [edi+14h],0Bh
-add eax,dword ptr [esi+54h]
-add eax,2BA9C55Dh
-add dword ptr [edi+14h],eax
-mov edx,dword ptr [edi+8h]
-mov eax,dword ptr [edi+18h]
-and edx,dword ptr [edi+4h]
-mov ebx,dword ptr [edi+8h]
-and eax,dword ptr [edi+4h]
-xor edx,dword ptr [edi+0Ch]
-xor eax,dword ptr [edi+14h]
-and ebx,dword ptr [edi+1Ch]
-xor edx,dword ptr [edi+14h]
-xor eax,ebx
-and edx,dword ptr [edi]
-xor eax,edx
-ror eax,7h
-ror dword ptr [edi+10h],0Bh
-add eax,dword ptr [esi+28h]
-add eax,741831F6h
-add dword ptr [edi+10h],eax
-mov edx,dword ptr [edi+4h]
-mov eax,dword ptr [edi+14h]
-and edx,dword ptr [edi]
-mov ebx,dword ptr [edi+4h]
-and eax,dword ptr [edi]
-xor edx,dword ptr [edi+8h]
-xor eax,dword ptr [edi+10h]
-and ebx,dword ptr [edi+18h]
-xor edx,dword ptr [edi+10h]
-xor eax,ebx
-and edx,dword ptr [edi+1Ch]
-xor eax,edx
-ror eax,7h
-ror dword ptr [edi+0Ch],0Bh
-add eax,dword ptr [esi+5Ch]
-add eax,0CE5C3E16h
-add dword ptr [edi+0Ch],eax
-mov edx,dword ptr [edi]
-mov eax,dword ptr [edi+10h]
-and edx,dword ptr [edi+1Ch]
-mov ebx,dword ptr [edi]
-and eax,dword ptr [edi+1Ch]
-xor edx,dword ptr [edi+4h]
-xor eax,dword ptr [edi+0Ch]
-and ebx,dword ptr [edi+14h]
-xor edx,dword ptr [edi+0Ch]
-xor eax,ebx
-and edx,dword ptr [edi+18h]
-xor eax,edx
-ror eax,7h
-ror dword ptr [edi+8h],0Bh
-add eax,dword ptr [esi+2Ch]
-add eax,9B87931Eh
-add dword ptr [edi+8h],eax
-mov edx,dword ptr [edi+1Ch]
-mov eax,dword ptr [edi+0Ch]
-and edx,dword ptr [edi+18h]
-mov ebx,dword ptr [edi+1Ch]
-and eax,dword ptr [edi+18h]
-xor edx,dword ptr [edi]
-xor eax,dword ptr [edi+8h]
-and ebx,dword ptr [edi+10h]
-xor edx,dword ptr [edi+8h]
-xor eax,ebx
-and edx,dword ptr [edi+14h]
-xor eax,edx
-ror eax,7h
-ror dword ptr [edi+4h],0Bh
-add eax,dword ptr [esi+14h]
-add eax,0AFD6BA33h
-add dword ptr [edi+4h],eax
-mov edx,dword ptr [edi+18h]
-mov eax,dword ptr [edi+8h]
-and edx,dword ptr [edi+14h]
-mov ebx,dword ptr [edi+18h]
-and eax,dword ptr [edi+14h]
-xor edx,dword ptr [edi+1Ch]
-xor eax,dword ptr [edi+4h]
-and ebx,dword ptr [edi+0Ch]
-xor edx,dword ptr [edi+4h]
-xor eax,ebx
-and edx,dword ptr [edi+10h]
-xor eax,edx
-ror eax,7h
-ror dword ptr [edi],0Bh
-add eax,dword ptr [esi+8h]
-add eax,6C24CF5Ch
-add dword ptr [edi],eax
-mov edx,dword ptr [edi]
-mov ecx,dword ptr [edi+4h]
-mov ebx,dword ptr [edi+8h]
-mov eax,dword ptr [edi+0Ch]
-add edx,dword ptr [haval_buf]
-add ecx,dword ptr [haval_buf+4]
-add ebx,dword ptr [haval_buf+8]
-add eax,dword ptr [haval_buf+12]
-mov dword ptr [haval_buf],edx
-mov dword ptr [haval_buf+4h],ecx
-mov dword ptr [haval_buf+8h],ebx
-mov dword ptr [haval_buf+12],eax
-mov dword ptr [edi],edx
-mov dword ptr [edi+4h],ecx
-mov dword ptr [edi+8h],ebx
-mov dword ptr [edi+0Ch],eax
-mov edx,dword ptr [edi+10h]
-mov ecx,dword ptr [edi+14h]
-mov ebx,dword ptr [edi+18h]
-mov eax,dword ptr [edi+1Ch]
-add edx,dword ptr [haval_buf+16]
-add ecx,dword ptr [haval_buf+20]
-add ebx,dword ptr [haval_buf+24]
-add eax,dword ptr [haval_buf+28]
-mov dword ptr [haval_buf+16],edx
-mov dword ptr [haval_buf+20],ecx
-mov dword ptr [haval_buf+24],ebx
-mov dword ptr [haval_buf+28],eax
-mov dword ptr [edi+10h],edx
-mov dword ptr [edi+14h],ecx
-mov dword ptr [edi+18h],ebx
-mov dword ptr [edi+1Ch],eax
-sub dword ptr [haval2],80h
-add esi,80h
-jmp LABEL_0x004010A9 ; => 0x004010A9
+	mov	edi, offset _temp_hash_0
+	mov	dword ptr [_hash_0] , 0344F7A98h
+	mov	dword ptr [_hash_1] , 085A308D3h
+	mov	dword ptr [_hash_2] , 013198A2Eh
+	mov	dword ptr [_hash_3] , 003707344h
+	mov	dword ptr [_hash_4] , 0A4093822h
+	mov	dword ptr [_hash_5] , 0299F31D0h
+	mov	dword ptr [_hash_6] , 0082EFA98h
+	mov	dword ptr [_hash_7] , 0EC4E6C89h
 
-LABEL_0x0040242F:
-cmp byte ptr [havalb1],0h
-je LABEL_0x004024B5 ; => 0x004024B5
-mov ecx,dword ptr [haval2]
-mov byte ptr [havalb1],0h
-mov dword ptr [haval2],80h
-mov eax,ecx
-mov edi,offset haval_buf3
-test eax,eax
-je LABEL_0x00402467 ; => 0x00402467
+	mov	dword ptr [edi+ 0] , 0243F6A88h
+	mov	dword ptr [edi+ 4] , 085A308D3h
+	mov	dword ptr [edi+ 8] , 013198A2Eh
+	mov	dword ptr [edi+12] , 003707344h
+	mov	dword ptr [edi+16] , 0A4093822h
+	mov	dword ptr [edi+20] , 0299F31D0h
+	mov	dword ptr [edi+24] , 0082EFA98h
+	mov	dword ptr [edi+28] , 0EC4E6C89h
 
-LABEL_0x0040245A:
-mov bl,byte ptr [ecx+esi-1h]
-mov byte ptr [ecx+edi-1h],bl
-dec ecx
-jne LABEL_0x0040245A ; => 0x0040245A
-add edi,eax
+@@HAVAL_Loop:
+	cmp	dword ptr [_count] , 128
+	jb	@@HAVAL_POF
+	
+	FF_1	y7,y6,y5,y4,y3,y2,y1,y0, dword ptr [esi+4* 0]
+	FF_1	y6,y5,y4,y3,y2,y1,y0,y7, dword ptr [esi+4* 1]
+	FF_1	y5,y4,y3,y2,y1,y0,y7,y6, dword ptr [esi+4* 2]
+	FF_1	y4,y3,y2,y1,y0,y7,y6,y5, dword ptr [esi+4* 3]
+	FF_1	y3,y2,y1,y0,y7,y6,y5,y4, dword ptr [esi+4* 4]
+	FF_1	y2,y1,y0,y7,y6,y5,y4,y3, dword ptr [esi+4* 5]
+	FF_1	y1,y0,y7,y6,y5,y4,y3,y2, dword ptr [esi+4* 6]
+	FF_1	y0,y7,y6,y5,y4,y3,y2,y1, dword ptr [esi+4* 7]
+	FF_1	y7,y6,y5,y4,y3,y2,y1,y0, dword ptr [esi+4* 8]
+	FF_1	y6,y5,y4,y3,y2,y1,y0,y7, dword ptr [esi+4* 9]
+	FF_1	y5,y4,y3,y2,y1,y0,y7,y6, dword ptr [esi+4*10]
+	FF_1	y4,y3,y2,y1,y0,y7,y6,y5, dword ptr [esi+4*11]
+	FF_1	y3,y2,y1,y0,y7,y6,y5,y4, dword ptr [esi+4*12]
+	FF_1	y2,y1,y0,y7,y6,y5,y4,y3, dword ptr [esi+4*13]
+	FF_1	y1,y0,y7,y6,y5,y4,y3,y2, dword ptr [esi+4*14]
+	FF_1	y0,y7,y6,y5,y4,y3,y2,y1, dword ptr [esi+4*15]
+	FF_1	y7,y6,y5,y4,y3,y2,y1,y0, dword ptr [esi+4*16]
+	FF_1	y6,y5,y4,y3,y2,y1,y0,y7, dword ptr [esi+4*17]
+	FF_1	y5,y4,y3,y2,y1,y0,y7,y6, dword ptr [esi+4*18]
+	FF_1	y4,y3,y2,y1,y0,y7,y6,y5, dword ptr [esi+4*19]
+	FF_1	y3,y2,y1,y0,y7,y6,y5,y4, dword ptr [esi+4*20]
+	FF_1	y2,y1,y0,y7,y6,y5,y4,y3, dword ptr [esi+4*21]
+	FF_1	y1,y0,y7,y6,y5,y4,y3,y2, dword ptr [esi+4*22]
+	FF_1	y0,y7,y6,y5,y4,y3,y2,y1, dword ptr [esi+4*23]
+	FF_1	y7,y6,y5,y4,y3,y2,y1,y0, dword ptr [esi+4*24]
+	FF_1	y6,y5,y4,y3,y2,y1,y0,y7, dword ptr [esi+4*25]
+	FF_1	y5,y4,y3,y2,y1,y0,y7,y6, dword ptr [esi+4*26]
+	FF_1	y4,y3,y2,y1,y0,y7,y6,y5, dword ptr [esi+4*27]
+	FF_1	y3,y2,y1,y0,y7,y6,y5,y4, dword ptr [esi+4*28]
+	FF_1	y2,y1,y0,y7,y6,y5,y4,y3, dword ptr [esi+4*29]
+	FF_1	y1,y0,y7,y6,y5,y4,y3,y2, dword ptr [esi+4*30]
+	FF_1	y0,y7,y6,y5,y4,y3,y2,y1, dword ptr [esi+4*31]
 
-LABEL_0x00402467:
-mov byte ptr [edi],80h
-mov ecx,eax
-inc edi
-sub ecx,75h
-neg ecx
-je LABEL_0x0040248B ; => 0x0040248B
-jns LABEL_0x00402486 ; => 0x00402486
-add dword ptr [haval2],80h
-add ecx,80h
+	FF_2	y7,y6,y5,y4,y3,y2,y1,y0, dword ptr [esi+4* 5],0452821E6h
+	FF_2	y6,y5,y4,y3,y2,y1,y0,y7, dword ptr [esi+4*14],038D01377h
+	FF_2	y5,y4,y3,y2,y1,y0,y7,y6, dword ptr [esi+4*26],0BE5466CFh
+	FF_2	y4,y3,y2,y1,y0,y7,y6,y5, dword ptr [esi+4*18],034E90C6Ch
+	FF_2	y3,y2,y1,y0,y7,y6,y5,y4, dword ptr [esi+4*11],0C0AC29B7h
+	FF_2	y2,y1,y0,y7,y6,y5,y4,y3, dword ptr [esi+4*28],0C97C50DDh
+	FF_2	y1,y0,y7,y6,y5,y4,y3,y2, dword ptr [esi+4* 7],03F84D5B5h
+	FF_2	y0,y7,y6,y5,y4,y3,y2,y1, dword ptr [esi+4*16],0B5470917h
+	FF_2	y7,y6,y5,y4,y3,y2,y1,y0, dword ptr [esi+4* 0],09216D5D9h
+	FF_2	y6,y5,y4,y3,y2,y1,y0,y7, dword ptr [esi+4*23],08979FB1Bh
+	FF_2	y5,y4,y3,y2,y1,y0,y7,y6, dword ptr [esi+4*20],0D1310BA6h
+	FF_2	y4,y3,y2,y1,y0,y7,y6,y5, dword ptr [esi+4*22],098DFB5ACh
+	FF_2	y3,y2,y1,y0,y7,y6,y5,y4, dword ptr [esi+4* 1],02FFD72DBh
+	FF_2	y2,y1,y0,y7,y6,y5,y4,y3, dword ptr [esi+4*10],0D01ADFB7h
+	FF_2	y1,y0,y7,y6,y5,y4,y3,y2, dword ptr [esi+4* 4],0B8E1AFEDh
+	FF_2	y0,y7,y6,y5,y4,y3,y2,y1, dword ptr [esi+4* 8],06A267E96h
+	FF_2	y7,y6,y5,y4,y3,y2,y1,y0, dword ptr [esi+4*30],0BA7C9045h
+	FF_2	y6,y5,y4,y3,y2,y1,y0,y7, dword ptr [esi+4* 3],0F12C7F99h
+	FF_2	y5,y4,y3,y2,y1,y0,y7,y6, dword ptr [esi+4*21],024A19947h
+	FF_2	y4,y3,y2,y1,y0,y7,y6,y5, dword ptr [esi+4* 9],0B3916CF7h
+	FF_2	y3,y2,y1,y0,y7,y6,y5,y4, dword ptr [esi+4*17],00801F2E2h
+	FF_2	y2,y1,y0,y7,y6,y5,y4,y3, dword ptr [esi+4*24],0858EFC16h
+	FF_2	y1,y0,y7,y6,y5,y4,y3,y2, dword ptr [esi+4*29],0636920D8h
+	FF_2	y0,y7,y6,y5,y4,y3,y2,y1, dword ptr [esi+4* 6],071574E69h
+	FF_2	y7,y6,y5,y4,y3,y2,y1,y0, dword ptr [esi+4*19],0A458FEA3h
+	FF_2	y6,y5,y4,y3,y2,y1,y0,y7, dword ptr [esi+4*12],0F4933D7Eh
+	FF_2	y5,y4,y3,y2,y1,y0,y7,y6, dword ptr [esi+4*15],00D95748Fh
+	FF_2	y4,y3,y2,y1,y0,y7,y6,y5, dword ptr [esi+4*13],0728EB658h
+	FF_2	y3,y2,y1,y0,y7,y6,y5,y4, dword ptr [esi+4* 2],0718BCD58h
+	FF_2	y2,y1,y0,y7,y6,y5,y4,y3, dword ptr [esi+4*25],082154AEEh
+	FF_2	y1,y0,y7,y6,y5,y4,y3,y2, dword ptr [esi+4*31],07B54A41Dh
+	FF_2	y0,y7,y6,y5,y4,y3,y2,y1, dword ptr [esi+4*27],0C25A59B5h
 
-LABEL_0x00402486:
-xor al,al
-cld 
-rep stosb 
+	FF_3	y7,y6,y5,y4,y3,y2,y1,y0, dword ptr [esi+4*19],09C30D539h
+	FF_3	y6,y5,y4,y3,y2,y1,y0,y7, dword ptr [esi+4* 9],02AF26013h
+	FF_3	y5,y4,y3,y2,y1,y0,y7,y6, dword ptr [esi+4* 4],0C5D1B023h
+	FF_3	y4,y3,y2,y1,y0,y7,y6,y5, dword ptr [esi+4*20],0286085F0h
+	FF_3	y3,y2,y1,y0,y7,y6,y5,y4, dword ptr [esi+4*28],0CA417918h
+	FF_3	y2,y1,y0,y7,y6,y5,y4,y3, dword ptr [esi+4*17],0B8DB38EFh
+	FF_3	y1,y0,y7,y6,y5,y4,y3,y2, dword ptr [esi+4* 8],08E79DCB0h
+	FF_3	y0,y7,y6,y5,y4,y3,y2,y1, dword ptr [esi+4*22],0603A180Eh
+	FF_3	y7,y6,y5,y4,y3,y2,y1,y0, dword ptr [esi+4*29],06C9E0E8Bh
+	FF_3	y6,y5,y4,y3,y2,y1,y0,y7, dword ptr [esi+4*14],0B01E8A3Eh
+	FF_3	y5,y4,y3,y2,y1,y0,y7,y6, dword ptr [esi+4*25],0D71577C1h
+	FF_3	y4,y3,y2,y1,y0,y7,y6,y5, dword ptr [esi+4*12],0BD314B27h
+	FF_3	y3,y2,y1,y0,y7,y6,y5,y4, dword ptr [esi+4*24],078AF2FDAh
+	FF_3	y2,y1,y0,y7,y6,y5,y4,y3, dword ptr [esi+4*30],055605C60h
+	FF_3	y1,y0,y7,y6,y5,y4,y3,y2, dword ptr [esi+4*16],0E65525F3h
+	FF_3	y0,y7,y6,y5,y4,y3,y2,y1, dword ptr [esi+4*26],0AA55AB94h
+	FF_3	y7,y6,y5,y4,y3,y2,y1,y0, dword ptr [esi+4*31],057489862h
+	FF_3	y6,y5,y4,y3,y2,y1,y0,y7, dword ptr [esi+4*15],063E81440h
+	FF_3	y5,y4,y3,y2,y1,y0,y7,y6, dword ptr [esi+4* 7],055CA396Ah
+	FF_3	y4,y3,y2,y1,y0,y7,y6,y5, dword ptr [esi+4* 3],02AAB10B6h
+	FF_3	y3,y2,y1,y0,y7,y6,y5,y4, dword ptr [esi+4* 1],0B4CC5C34h
+	FF_3	y2,y1,y0,y7,y6,y5,y4,y3, dword ptr [esi+4* 0],01141E8CEh
+	FF_3	y1,y0,y7,y6,y5,y4,y3,y2, dword ptr [esi+4*18],0A15486AFh
+	FF_3	y0,y7,y6,y5,y4,y3,y2,y1, dword ptr [esi+4*27],07C72E993h
+	FF_3	y7,y6,y5,y4,y3,y2,y1,y0, dword ptr [esi+4*13],0B3EE1411h
+	FF_3	y6,y5,y4,y3,y2,y1,y0,y7, dword ptr [esi+4* 6],0636FBC2Ah
+	FF_3	y5,y4,y3,y2,y1,y0,y7,y6, dword ptr [esi+4*21],02BA9C55Dh
+	FF_3	y4,y3,y2,y1,y0,y7,y6,y5, dword ptr [esi+4*10],0741831F6h
+	FF_3	y3,y2,y1,y0,y7,y6,y5,y4, dword ptr [esi+4*23],0CE5C3E16h
+	FF_3	y2,y1,y0,y7,y6,y5,y4,y3, dword ptr [esi+4*11],09B87931Eh
+	FF_3	y1,y0,y7,y6,y5,y4,y3,y2, dword ptr [esi+4* 5],0AFD6BA33h
+	FF_3	y0,y7,y6,y5,y4,y3,y2,y1, dword ptr [esi+4* 2],06C24CF5Ch
 
-LABEL_0x0040248B:
-mov word ptr [edi],2019h
-add edi,2h
-xor edx,edx
-mov eax,dword ptr [haval1]
-mov ebx,8h
-mul ebx
-mov dword ptr [edi],eax
-mov dword ptr [edi+4h],edx
-mov esi,offset haval_buf3
-mov edi,offset haval_buf2
-jmp LABEL_0x004010A9 ; => 0x004010A9
+IFE	(PASS - 4)
 
-LABEL_0x004024B5:
-mov esi,dword ptr [ebp+8h]
-mov cx,word ptr [edi+1Bh]
-mov dl,byte ptr [edi+1Dh]
-shl ecx,10h
-shl edx,10h
-mov ch,byte ptr [edi+16h]
-mov dx,word ptr [edi+17h]
-mov cl,byte ptr [edi+11h]
-shl edx,8h
-add ecx,dword ptr [edi]
-mov dl,byte ptr [edi+12h]
-mov dword ptr [esi],ecx
-mov al,byte ptr [edi+19h]
-mov bl,byte ptr [edi+1Ah]
-add edx,dword ptr [edi+4h]
-mov bh,byte ptr [edi+1Fh]
-mov ah,byte ptr [edi+1Eh]
-mov dword ptr [esi+4h],edx
-shl ebx,10h
-shl eax,10h
-mov bl,byte ptr [edi+10h]
-mov ax,word ptr [edi+13h]
-mov bh,byte ptr [edi+15h]
-add eax,dword ptr [edi+8h]
-add ebx,dword ptr [edi+0Ch]
-mov dword ptr [esi+8h],eax
-mov dword ptr [esi+0Ch],ebx
-mov edi,offset haval_buf
-mov ecx,53h
-xor eax,eax
-cld 
-rep stosd 
-popad 
-ret
-; Finish of selected range: 0x0040251A
+	FF_4	y7,y6,y5,y4,y3,y2,y1,y0, dword ptr [esi+4*24],07A325381h
+	FF_4	y6,y5,y4,y3,y2,y1,y0,y7, dword ptr [esi+4* 4],028958677h
+	FF_4	y5,y4,y3,y2,y1,y0,y7,y6, dword ptr [esi+4* 0],03B8F4898h
+	FF_4	y4,y3,y2,y1,y0,y7,y6,y5, dword ptr [esi+4*14],06B4BB9AFh
+	FF_4	y3,y2,y1,y0,y7,y6,y5,y4, dword ptr [esi+4* 2],0C4BFE81Bh
+	FF_4	y2,y1,y0,y7,y6,y5,y4,y3, dword ptr [esi+4* 7],066282193h
+	FF_4	y1,y0,y7,y6,y5,y4,y3,y2, dword ptr [esi+4*28],061D809CCh
+	FF_4	y0,y7,y6,y5,y4,y3,y2,y1, dword ptr [esi+4*23],0FB21A991h
+	FF_4	y7,y6,y5,y4,y3,y2,y1,y0, dword ptr [esi+4*26],0487CAC60h
+	FF_4	y6,y5,y4,y3,y2,y1,y0,y7, dword ptr [esi+4* 6],05DEC8032h
+	FF_4	y5,y4,y3,y2,y1,y0,y7,y6, dword ptr [esi+4*30],0EF845D5Dh
+	FF_4	y4,y3,y2,y1,y0,y7,y6,y5, dword ptr [esi+4*20],0E98575B1h
+	FF_4	y3,y2,y1,y0,y7,y6,y5,y4, dword ptr [esi+4*18],0DC262302h
+	FF_4	y2,y1,y0,y7,y6,y5,y4,y3, dword ptr [esi+4*25],0EB651B88h
+	FF_4	y1,y0,y7,y6,y5,y4,y3,y2, dword ptr [esi+4*19],023893E81h
+	FF_4	y0,y7,y6,y5,y4,y3,y2,y1, dword ptr [esi+4* 3],0D396ACC5h
+	FF_4	y7,y6,y5,y4,y3,y2,y1,y0, dword ptr [esi+4*22],00F6D6FF3h
+	FF_4	y6,y5,y4,y3,y2,y1,y0,y7, dword ptr [esi+4*11],083F44239h
+	FF_4	y5,y4,y3,y2,y1,y0,y7,y6, dword ptr [esi+4*31],02E0B4482h
+	FF_4	y4,y3,y2,y1,y0,y7,y6,y5, dword ptr [esi+4*21],0A4842004h
+	FF_4	y3,y2,y1,y0,y7,y6,y5,y4, dword ptr [esi+4* 8],069C8F04Ah
+	FF_4	y2,y1,y0,y7,y6,y5,y4,y3, dword ptr [esi+4*27],09E1F9B5Eh
+	FF_4	y1,y0,y7,y6,y5,y4,y3,y2, dword ptr [esi+4*12],021C66842h
+	FF_4	y0,y7,y6,y5,y4,y3,y2,y1, dword ptr [esi+4* 9],0F6E96C9Ah
+	FF_4	y7,y6,y5,y4,y3,y2,y1,y0, dword ptr [esi+4* 1],0670C9C61h
+	FF_4	y6,y5,y4,y3,y2,y1,y0,y7, dword ptr [esi+4*29],0ABD388F0h
+	FF_4	y5,y4,y3,y2,y1,y0,y7,y6, dword ptr [esi+4* 5],06A51A0D2h
+	FF_4	y4,y3,y2,y1,y0,y7,y6,y5, dword ptr [esi+4*15],0D8542F68h
+	FF_4	y3,y2,y1,y0,y7,y6,y5,y4, dword ptr [esi+4*17],0960FA728h
+	FF_4	y2,y1,y0,y7,y6,y5,y4,y3, dword ptr [esi+4*10],0AB5133A3h
+	FF_4	y1,y0,y7,y6,y5,y4,y3,y2, dword ptr [esi+4*16],06EEF0B6Ch
+	FF_4	y0,y7,y6,y5,y4,y3,y2,y1, dword ptr [esi+4*13],0137A3BE4h
 
-d2k2_crackme08_hash endp
-END
+ENDIF
+	
+IFE	(PASS - 5)
+
+	FF_4	y7,y6,y5,y4,y3,y2,y1,y0, dword ptr [esi+4*24],07A325381h
+	FF_4	y6,y5,y4,y3,y2,y1,y0,y7, dword ptr [esi+4* 4],028958677h
+	FF_4	y5,y4,y3,y2,y1,y0,y7,y6, dword ptr [esi+4* 0],03B8F4898h
+	FF_4	y4,y3,y2,y1,y0,y7,y6,y5, dword ptr [esi+4*14],06B4BB9AFh
+	FF_4	y3,y2,y1,y0,y7,y6,y5,y4, dword ptr [esi+4* 2],0C4BFE81Bh
+	FF_4	y2,y1,y0,y7,y6,y5,y4,y3, dword ptr [esi+4* 7],066282193h
+	FF_4	y1,y0,y7,y6,y5,y4,y3,y2, dword ptr [esi+4*28],061D809CCh
+	FF_4	y0,y7,y6,y5,y4,y3,y2,y1, dword ptr [esi+4*23],0FB21A991h
+	FF_4	y7,y6,y5,y4,y3,y2,y1,y0, dword ptr [esi+4*26],0487CAC60h
+	FF_4	y6,y5,y4,y3,y2,y1,y0,y7, dword ptr [esi+4* 6],05DEC8032h
+	FF_4	y5,y4,y3,y2,y1,y0,y7,y6, dword ptr [esi+4*30],0EF845D5Dh
+	FF_4	y4,y3,y2,y1,y0,y7,y6,y5, dword ptr [esi+4*20],0E98575B1h
+	FF_4	y3,y2,y1,y0,y7,y6,y5,y4, dword ptr [esi+4*18],0DC262302h
+	FF_4	y2,y1,y0,y7,y6,y5,y4,y3, dword ptr [esi+4*25],0EB651B88h
+	FF_4	y1,y0,y7,y6,y5,y4,y3,y2, dword ptr [esi+4*19],023893E81h
+	FF_4	y0,y7,y6,y5,y4,y3,y2,y1, dword ptr [esi+4* 3],0D396ACC5h
+	FF_4	y7,y6,y5,y4,y3,y2,y1,y0, dword ptr [esi+4*22],00F6D6FF3h
+	FF_4	y6,y5,y4,y3,y2,y1,y0,y7, dword ptr [esi+4*11],083F44239h
+	FF_4	y5,y4,y3,y2,y1,y0,y7,y6, dword ptr [esi+4*31],02E0B4482h
+	FF_4	y4,y3,y2,y1,y0,y7,y6,y5, dword ptr [esi+4*21],0A4842004h
+	FF_4	y3,y2,y1,y0,y7,y6,y5,y4, dword ptr [esi+4* 8],069C8F04Ah
+	FF_4	y2,y1,y0,y7,y6,y5,y4,y3, dword ptr [esi+4*27],09E1F9B5Eh
+	FF_4	y1,y0,y7,y6,y5,y4,y3,y2, dword ptr [esi+4*12],021C66842h
+	FF_4	y0,y7,y6,y5,y4,y3,y2,y1, dword ptr [esi+4* 9],0F6E96C9Ah
+	FF_4	y7,y6,y5,y4,y3,y2,y1,y0, dword ptr [esi+4* 1],0670C9C61h
+	FF_4	y6,y5,y4,y3,y2,y1,y0,y7, dword ptr [esi+4*29],0ABD388F0h
+	FF_4	y5,y4,y3,y2,y1,y0,y7,y6, dword ptr [esi+4* 5],06A51A0D2h
+	FF_4	y4,y3,y2,y1,y0,y7,y6,y5, dword ptr [esi+4*15],0D8542F68h
+	FF_4	y3,y2,y1,y0,y7,y6,y5,y4, dword ptr [esi+4*17],0960FA728h
+	FF_4	y2,y1,y0,y7,y6,y5,y4,y3, dword ptr [esi+4*10],0AB5133A3h
+	FF_4	y1,y0,y7,y6,y5,y4,y3,y2, dword ptr [esi+4*16],06EEF0B6Ch
+	FF_4	y0,y7,y6,y5,y4,y3,y2,y1, dword ptr [esi+4*13],0137A3BE4h
+
+	FF_5	y7,y6,y5,y4,y3,y2,y1,y0, dword ptr [esi+4*27],0BA3BF050h
+	FF_5	y6,y5,y4,y3,y2,y1,y0,y7, dword ptr [esi+4* 3],07EFB2A98h
+	FF_5	y5,y4,y3,y2,y1,y0,y7,y6, dword ptr [esi+4*21],0A1F1651Dh
+	FF_5	y4,y3,y2,y1,y0,y7,y6,y5, dword ptr [esi+4*26],039AF0176h
+	FF_5	y3,y2,y1,y0,y7,y6,y5,y4, dword ptr [esi+4*17],066CA593Eh
+	FF_5	y2,y1,y0,y7,y6,y5,y4,y3, dword ptr [esi+4*11],082430E88h
+	FF_5	y1,y0,y7,y6,y5,y4,y3,y2, dword ptr [esi+4*20],08CEE8619h
+	FF_5	y0,y7,y6,y5,y4,y3,y2,y1, dword ptr [esi+4*29],0456F9FB4h
+	FF_5	y7,y6,y5,y4,y3,y2,y1,y0, dword ptr [esi+4*19],07D84A5C3h
+	FF_5	y6,y5,y4,y3,y2,y1,y0,y7, dword ptr [esi+4* 0],03B8B5EBEh
+	FF_5	y5,y4,y3,y2,y1,y0,y7,y6, dword ptr [esi+4*12],0E06F75D8h
+	FF_5	y4,y3,y2,y1,y0,y7,y6,y5, dword ptr [esi+4* 7],085C12073h
+	FF_5	y3,y2,y1,y0,y7,y6,y5,y4, dword ptr [esi+4*13],0401A449Fh
+	FF_5	y2,y1,y0,y7,y6,y5,y4,y3, dword ptr [esi+4* 8],056C16AA6h
+	FF_5	y1,y0,y7,y6,y5,y4,y3,y2, dword ptr [esi+4*31],04ED3AA62h
+	FF_5	y0,y7,y6,y5,y4,y3,y2,y1, dword ptr [esi+4*10],0363F7706h
+	FF_5	y7,y6,y5,y4,y3,y2,y1,y0, dword ptr [esi+4* 5],01BFEDF72h
+	FF_5	y6,y5,y4,y3,y2,y1,y0,y7, dword ptr [esi+4* 9],0429B023Dh
+	FF_5	y5,y4,y3,y2,y1,y0,y7,y6, dword ptr [esi+4*14],037D0D724h
+	FF_5	y4,y3,y2,y1,y0,y7,y6,y5, dword ptr [esi+4*30],0D00A1248h
+	FF_5	y3,y2,y1,y0,y7,y6,y5,y4, dword ptr [esi+4*18],0DB0FEAD3h
+	FF_5	y2,y1,y0,y7,y6,y5,y4,y3, dword ptr [esi+4* 6],049F1C09Bh
+	FF_5	y1,y0,y7,y6,y5,y4,y3,y2, dword ptr [esi+4*28],0075372C9h
+	FF_5	y0,y7,y6,y5,y4,y3,y2,y1, dword ptr [esi+4*24],080991B7Bh
+	FF_5	y7,y6,y5,y4,y3,y2,y1,y0, dword ptr [esi+4* 2],025D479D8h
+	FF_5	y6,y5,y4,y3,y2,y1,y0,y7, dword ptr [esi+4*23],0F6E8DEF7h
+	FF_5	y5,y4,y3,y2,y1,y0,y7,y6, dword ptr [esi+4*16],0E3FE501Ah
+	FF_5	y4,y3,y2,y1,y0,y7,y6,y5, dword ptr [esi+4*22],0B6794C3Bh
+	FF_5	y3,y2,y1,y0,y7,y6,y5,y4, dword ptr [esi+4* 4],0976CE0BDh
+	FF_5	y2,y1,y0,y7,y6,y5,y4,y3, dword ptr [esi+4* 1],004C006BAh
+	FF_5	y1,y0,y7,y6,y5,y4,y3,y2, dword ptr [esi+4*25],0C1A94FB6h
+	FF_5	y0,y7,y6,y5,y4,y3,y2,y1, dword ptr [esi+4*15],0409F60C4h
+
+ENDIF
+	mov	edx, dword ptr [edi + 0]
+	mov	ecx, dword ptr [edi + 4]
+	mov	ebx, dword ptr [edi + 8]
+	mov	eax, dword ptr [edi +12]
+
+	add	edx, dword ptr [_hash_0]
+	add	ecx, dword ptr [_hash_1]
+	add	ebx, dword ptr [_hash_2]
+	add	eax, dword ptr [_hash_3]
+
+	mov	dword ptr [_hash_0], edx
+	mov	dword ptr [_hash_1], ecx
+	mov	dword ptr [_hash_2], ebx
+	mov	dword ptr [_hash_3], eax
+
+	mov	dword ptr [edi + 0], edx
+	mov	dword ptr [edi + 4], ecx
+	mov	dword ptr [edi + 8], ebx
+	mov	dword ptr [edi +12], eax
+
+	mov	edx, dword ptr [edi +16]
+	mov	ecx, dword ptr [edi +20]
+	mov	ebx, dword ptr [edi +24]
+	mov	eax, dword ptr [edi +28]
+
+	add	edx, dword ptr [_hash_4]
+	add	ecx, dword ptr [_hash_5]
+	add	ebx, dword ptr [_hash_6]
+	add	eax, dword ptr [_hash_7]
+
+	mov	dword ptr [_hash_4], edx
+	mov	dword ptr [_hash_5], ecx
+	mov	dword ptr [_hash_6], ebx
+	mov	dword ptr [_hash_7], eax
+
+	mov	dword ptr [edi +16], edx
+	mov	dword ptr [edi +20], ecx
+	mov	dword ptr [edi +24], ebx
+	mov	dword ptr [edi +28], eax
+
+	sub	dword ptr [_count], 128
+	add	esi, 128
+	jmp	@@HAVAL_Loop
+
+@@HAVAL_POF:
+	cmp	byte ptr [_flag], 0
+	jz	@@Finishing
+
+;padding
+	mov	ecx, dword ptr [_count]
+	mov	byte ptr  [_flag] , 0
+	mov	dword ptr [_count], 128
+	mov	eax, ecx
+	mov	edi, offset _temp_bufor
+
+	test	eax, eax
+	jz	@@only_null
+	
+@@:
+	mov	bl, byte ptr [esi+ecx-1]
+	mov	byte ptr [edi+ecx-1], bl
+	dec	ecx
+	jnz	@B
+
+	add	edi, eax
+
+@@only_null:
+	mov	byte ptr [edi], 80h
+	mov	ecx, eax
+	inc	edi
+
+	sub	ecx, 117
+	neg	ecx
+	jz	@@save_size_in_pad
+	jns	@F
+
+	add	dword ptr [_count], 128
+	add	ecx, 128
+
+@@:
+	xor	al, al
+	cld
+	rep	stosb
+
+@@save_size_in_pad:
+
+	MAKE_HAVAL_MAGIC
+
+	add	edi, 2
+
+	xor	edx, edx
+	mov	eax, dword ptr [_size]
+
+	mov	ebx, 8
+	mul	ebx
+
+	mov	dword ptr [edi], eax
+	mov	dword ptr [edi+4], edx
+	mov	esi, offset _temp_bufor
+	mov	edi, offset _temp_hash_0
+	jmp	@@HAVAL_Loop
+
+@@Finishing:
+
+IFE	(FPTLEN - 128)
+
+	mov	esi, ptrOut
+	mov	cx, word ptr [edi + 27]
+	mov	dl, byte ptr [edi + 29]
+	shl	ecx, 16
+	shl	edx, 16
+	mov	ch, byte ptr [edi + 22]
+	mov	dx, word ptr [edi + 23]
+	mov	cl, byte ptr [edi + 17]
+	shl	edx, 8
+	add	ecx, dword ptr [edi]
+	mov	dl, byte ptr [edi + 18]
+	mov	dword ptr [esi + 0], ecx
+	mov	al, byte ptr [edi + 25]
+	mov	bl, byte ptr [edi + 26]
+	add	edx, dword ptr [edi + 4]
+	mov	bh, byte ptr [edi + 31]
+	mov	ah, byte ptr [edi + 30]
+	mov	dword ptr [esi + 4], edx
+	shl	ebx, 16	
+	shl	eax, 16
+	mov	bl, byte ptr [edi + 16]
+	mov	ax, word ptr [edi + 19]
+	mov	bh, byte ptr [edi + 21]
+	add	eax, dword ptr [edi + 8]
+	add	ebx, dword ptr [edi + 12]
+	mov	dword ptr [esi + 8], eax
+	mov	dword ptr [esi +12], ebx
+
+ENDIF
+
+IFE	(FPTLEN - 160)
+
+	mov	eax, dword ptr [edi + 7*4]
+	mov	ebx, dword ptr [edi + 6*4]
+	and	eax, 0FE000000h
+	and	ebx, 001F80000h
+	mov	ecx, dword ptr [edi + 5*4]
+	or	eax, ebx
+	and	ecx, 00007F000h
+	mov	edx, dword ptr [edi + 7*4]	;[7]
+	or	eax, ecx
+	mov	ebx, dword ptr [edi + 6*4]	;[6]
+	shr	eax, 12
+	mov	ecx, dword ptr [edi + 5*4]	;[5]
+	add	dword ptr [edi + 4*4], eax
+	and	edx, 001F80000h
+	mov	eax, ecx			;[5]
+	and	ebx, 00007F000h
+	and	ecx, 000000FC0h
+	or	edx, ebx
+	and	eax, 00000003Fh
+	or	edx, ecx
+	mov	ebx, dword ptr [edi + 6*4]	;[6]
+	shr	edx, 6
+	mov	ecx, dword ptr [edi + 7*4]	;[7]
+	and	ebx, 000000FC0h
+	add	dword ptr [edi + 3*4], edx
+	and	ecx, 00007F000h
+	or	eax, ebx
+	mov	edx, dword ptr [edi + 7*4]	;[7]
+	or	eax, ecx
+	mov	ebx, dword ptr [edi + 6*4]	;[6]
+	add	dword ptr [edi + 2*4], eax
+	mov	ecx, dword ptr [edi + 5*4]	;[5]
+	mov	eax, ebx			;[6]
+	and	edx, 000000FC0h
+	and	ebx, 00000003Fh
+	and	ecx, 0FE000000h
+	or	edx, ebx
+	and	eax, 0FE000000h
+	or	edx, ecx
+	mov	ebx, dword ptr [edi + 5*4]	;[5]
+	mov	ecx, dword ptr [edi + 7*4]	;[7]
+	and	ebx, 001F80000h
+	and	ecx, 00000003Fh
+	or	eax, ebx
+	ror	edx, 25
+	or	eax, ecx
+	add	dword ptr [edi + 1*4], edx
+	ror	eax, 19
+	add	dword ptr [edi], eax
+
+	mov	esi, ptrOut
+	mov	ecx, 5
+	xchg	esi, edi
+	cld
+	rep	movsd
+ENDIF
+
+IFE	(FPTLEN - 192)
+	mov	eax, dword ptr [edi + 28]
+	mov	ebx, dword ptr [edi + 24]
+	mov	ecx, eax
+	mov	edx, ebx
+	and	eax, 0FC000000h
+	and	ebx, 03E00000h
+	and	ecx, 03E00000h
+	or	eax, ebx
+	and	edx, 001F0000h
+	mov	ebx, dword ptr [edi + 24]	;[6]
+	shr	eax, 21
+	or	ecx, edx
+	add	dword ptr [edi + 20], eax
+	mov	edx, dword ptr [edi + 28]	;[7]
+	shr	ecx, 16
+	and	ebx, 0000FC00h
+	mov	eax, edx			;[7]
+	add	dword ptr [edi + 16], ecx
+	and	edx, 001F0000h
+	mov	ecx, dword ptr [edi + 24]	;[6]
+	or	ebx, edx
+	and	ecx, 000003E0h
+	mov	edx, eax			;[7]
+	shr	ebx, 10
+	and	eax, 0000FC00h
+	add	dword ptr [edi + 12], ebx
+	or	eax, ecx
+	mov	ebx, dword ptr [edi + 24]	;[6]
+	shr	eax, 5
+	and	edx, 000003E0h
+	mov	ecx, ebx			;[6]
+	add	dword ptr [edi + 8], eax
+	and	ebx, 0000001Fh
+	mov	eax, dword ptr [edi + 28]
+	and	ecx, 0FC000000h
+	and	eax, 0000001Fh
+	or	edx, ebx
+	or	eax, ecx
+	add	dword ptr [edi + 4], edx
+	ror	eax, 26
+	add	dword ptr [edi], eax
+
+	mov	esi, ptrOut
+	mov	ecx, 6
+	xchg	esi, edi
+	cld
+	rep	movsd
+ENDIF
+
+IFE	(FPTLEN - 224)
+
+	mov	eax, dword ptr [edi + 28]
+	mov	ebx, eax
+	mov	ecx, eax
+	and	ebx, 0Fh
+	mov	edx, eax
+	add	dword ptr [edi + 24], ebx
+
+	shr	ecx, 4
+	mov	ebx, eax
+	shr	edx, 9
+	and	ecx, 1Fh
+	shr	ebx, 13
+	add	dword ptr [edi + 20], ecx
+	and	edx, 0Fh
+	and	ebx, 1Fh
+	mov	ecx, eax
+	add	dword ptr [edi + 16], edx
+	shr	ecx, 18
+	add	dword ptr [edi + 12], ebx
+	mov	edx, eax
+	and	ecx, 0Fh
+	shr	edx, 22
+	add	dword ptr [edi + 8], ecx
+	shr	eax, 27
+	and	edx, 1Fh
+	and	eax, 1Fh
+	add	dword ptr [edi + 4], edx
+	add	dword ptr [edi], eax
+
+	mov	esi, ptrOut
+	mov	ecx, 7
+	xchg	esi, edi
+	cld
+	rep	movsd
+ENDIF
+
+IFE	(FPTLEN - 256)
+
+	mov	esi, ptrOut
+	mov	ecx, 8
+	xchg	esi, edi
+	cld
+	rep	movsd
+
+ENDIF
+
+	mov	edi, offset _hash_0
+	mov	ecx, 83
+	xor	eax, eax
+	cld
+	rep	stosd				;clear mem
+
+	popad
+	ret
+
+d2k2_crackme08_hash		endp
+end

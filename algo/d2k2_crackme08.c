@@ -47,7 +47,7 @@ typedef union
 	struct { uint8_t lo, hi; }b;
 } Register;
 
-extern void _stdcall d2k2_crackme08_hash(DWORD* output, DWORD input_len, DWORD* input, DWORD output_len);
+extern void _cdecl d2k2_crackme08_hash(DWORD* output, DWORD input_len, DWORD* input);
 
 
 
@@ -60,7 +60,7 @@ void process_serial(char *name, char *serial_out)
 	GetUserNameA(usrname, &compname_len);
 	compname_len = strlen(usrname);
 
-	d2k2_crackme08_hash(haval_hash, compname_len, usrname, compname_len);
+	d2k2_crackme08_hash(haval_hash, compname_len, usrname);
 
 	Register EB, EA, ED;
 	uint8_t bignum_tabloff1;
