@@ -31,9 +31,6 @@
     <ClInclude Include="algo\bignum\bignum.h">
       <Filter>Algorithm\bn</Filter>
     </ClInclude>
-    <ClInclude Include="algo\bignum\bn_mul.h">
-      <Filter>Algorithm\bn</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <MASM Include="algo\d2k2_crackme08_hash.asm">

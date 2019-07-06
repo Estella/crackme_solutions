@@ -39,8 +39,6 @@
 #if defined(MBEDTLS_BIGNUM_C)
 
 #include "bignum.h"
-#include "bn_mul.h"
-#include "platform_util.h"
 
 #include <string.h>
 
@@ -54,10 +52,46 @@
 #define mbedtls_free       free
 #endif
 
+#define MBEDTLS_PARAM_FAILED
+#define MBEDTLS_INTERNAL_VALIDATE_RET( cond, ret )  \
+    do {                                            \
+        if( !(cond) )                               \
+        {                                           \
+            MBEDTLS_PARAM_FAILED( cond );           \
+            return( ret );                          \
+        }                                           \
+    } while( 0 )
+
+ /* Internal macro meant to be called only from within the library. */
+#define MBEDTLS_INTERNAL_VALIDATE( cond )           \
+    do {                                            \
+        if( !(cond) )                               \
+        {                                           \
+            MBEDTLS_PARAM_FAILED( cond );           \
+            return;                                 \
+        }                                           \
+    } while( 0 )
+
 #define MPI_VALIDATE_RET( cond )                                       \
     MBEDTLS_INTERNAL_VALIDATE_RET( cond, MBEDTLS_ERR_MPI_BAD_INPUT_DATA )
 #define MPI_VALIDATE( cond )                                           \
     MBEDTLS_INTERNAL_VALIDATE( cond )
+
+#define MULADDC_INIT                    \
+{                                       \
+    mbedtls_t_udbl r;                           \
+    mbedtls_mpi_uint r0, r1;
+
+#define MULADDC_CORE                    \
+    r   = *(s++) * (mbedtls_t_udbl) b;          \
+    r0  = (mbedtls_mpi_uint) r;                   \
+    r1  = (mbedtls_mpi_uint)( r >> biL );         \
+    r0 += c;  r1 += (r0 <  c);          \
+    r0 += *d; r1 += (r0 < *d);          \
+    c = r1; *(d++) = r0;
+
+#define MULADDC_STOP                    \
+}
 
 #define ciL    (sizeof(mbedtls_mpi_uint))         /* chars in limb  */
 #define biL    (ciL << 3)               /* bits  in limb  */

@@ -154,7 +154,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="algo\bignum\bignum.h" />
-    <ClInclude Include="algo\bignum\bn_mul.h" />
     <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
