@@ -47,7 +47,7 @@ typedef union
 	struct { uint8_t lo, hi; }b;
 } Register;
 
-extern void _cdecl d2k2_crackme08_hash(DWORD* output, DWORD input_len, DWORD* input);
+extern void _stdcall d2k2_crackme08_hash(DWORD* output, DWORD input_len, DWORD* input);
 
 
 
