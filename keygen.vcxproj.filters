@@ -10,11 +10,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="keygen.cpp" />
-    <ClCompile Include="algo\d2k2_crackme08.c">
-      <Filter>Algorithm</Filter>
-    </ClCompile>
     <ClCompile Include="algo\bignum\bignum.c">
       <Filter>Algorithm\bn</Filter>
+    </ClCompile>
+    <ClCompile Include="algo\byteptr_kgnme1.c">
+      <Filter>Algorithm</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -31,10 +31,5 @@
     <ClInclude Include="algo\bignum\bignum.h">
       <Filter>Algorithm\bn</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <MASM Include="algo\d2k2_crackme08_hash.asm">
-      <Filter>Algorithm</Filter>
-    </MASM>
   </ItemGroup>
 </Project>
