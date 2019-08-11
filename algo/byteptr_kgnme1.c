@@ -37,7 +37,6 @@ void process_serial(char *name, char *serial_out)
 	DWORD ECX_ = *(DWORD*)(bufptr + 8);
 	ECX_ ^= EBX_;
 	wsprintf(&serial_out[16], "%.8X", ECX_);
-	EBX_ ^= 0xB0C0A09;
 	DWORD EDX_ = *(DWORD*)(bufptr + 0x0C);
 	wsprintf(&serial_out[24], "%.8X", EDX_);
 }
