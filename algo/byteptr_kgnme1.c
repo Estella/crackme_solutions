@@ -18,7 +18,6 @@ void MD5(BYTE * data, ULONG len, BYTE* hash_data)
 void process_serial(char *name, char *serial_out)
 {
 	BYTE hash_bytes[16] = { 0 };
-	char hash_string[33] = { 0 };
 	int namelen = lstrlen(name);
 	MD5((BYTE*)name, namelen, (BYTE*)hash_bytes);
 	for (int i = 0; i < 4; i++)
@@ -32,16 +31,15 @@ void process_serial(char *name, char *serial_out)
 	DWORD EAX_ = *(DWORD*)(bufptr);
 	DWORD EBX_ = *(DWORD*)(bufptr+4);
 	EAX_ ^= EBX_;
-	wsprintf(&hash_string[0], "%.8X", EAX_);
+	wsprintf(&serial_out[0], "%.8X", EAX_);
 	EBX_ ^= 0xFBD0099;
-	wsprintf(&hash_string[8], "%.8X", EBX_);
+	wsprintf(&serial_out[8], "%.8X", EBX_);
 	DWORD ECX_ = *(DWORD*)(bufptr + 8);
 	ECX_ ^= EBX_;
-	wsprintf(&hash_string[16], "%.8X", ECX_);
+	wsprintf(&serial_out[16], "%.8X", ECX_);
 	EBX_ ^= 0xB0C0A09;
 	DWORD EDX_ = *(DWORD*)(bufptr + 0x0C);
-	wsprintf(&hash_string[24], "%.8X", EDX_);
-	wsprintf(serial_out, "%s",hash_string);
+	wsprintf(&serial_out[24], "%.8X", EDX_);
 }
 
 
