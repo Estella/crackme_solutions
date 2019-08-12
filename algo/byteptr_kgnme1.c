@@ -31,14 +31,11 @@ void process_serial(char *name, char *serial_out)
 	DWORD EAX_ = *(DWORD*)(bufptr);
 	DWORD EBX_ = *(DWORD*)(bufptr+4);
 	EAX_ ^= EBX_;
-	wsprintf(&serial_out[0], "%.8X", EAX_);
 	EBX_ ^= 0xFBD0099;
-	wsprintf(&serial_out[8], "%.8X", EBX_);
 	DWORD ECX_ = *(DWORD*)(bufptr + 8);
 	ECX_ ^= EBX_;
-	wsprintf(&serial_out[16], "%.8X", ECX_);
 	DWORD EDX_ = *(DWORD*)(bufptr + 0x0C);
-	wsprintf(&serial_out[24], "%.8X", EDX_);
+	wsprintf(serial_out, "%.8X%.8X%.8X%.8X", EAX_, EBX_,ECX_,EDX_);
 }
 
 
