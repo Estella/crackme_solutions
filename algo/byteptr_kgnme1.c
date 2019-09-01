@@ -26,7 +26,6 @@ void process_serial(char *name, char *serial_out)
 		DWORD bytes = *(DWORD*)(bufptr+i);
 		*(DWORD*)(bufptr + i) = _byteswap_ulong(bytes);
 	}
-
 	BYTE* bufptr = hash_bytes;
 	DWORD EAX_ = *(DWORD*)(bufptr);
 	DWORD EBX_ = *(DWORD*)(bufptr+4);
