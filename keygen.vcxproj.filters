@@ -13,7 +13,7 @@
     <ClCompile Include="algo\bignum\bignum.c">
       <Filter>Algorithm\bn</Filter>
     </ClCompile>
-    <ClCompile Include="algo\byteptr_kgnme1.c">
+    <ClCompile Include="algo\d2k2_crackme09.c">
       <Filter>Algorithm</Filter>
     </ClCompile>
   </ItemGroup>
