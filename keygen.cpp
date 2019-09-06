@@ -47,6 +47,7 @@ DWORD WINAPI GenerateSerial(HWND hwnd) {
 	}
 	process_serial((char*)name, (char*)serial);
 	SetDlgItemText(hwnd, IDC_SERIAL, (char*)serial);
+	SetDlgItemText(hwnd, IDC_NAME, (char*)name);
 	return 0;
 }
 
