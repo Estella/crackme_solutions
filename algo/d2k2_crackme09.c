@@ -11,7 +11,6 @@ typedef union
 } Register;
 
 const char* validchar_tbl = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-
 unsigned char* buildsertable(int start_pos)
 {
 	int serialen = strlen(validchar_tbl);
@@ -19,11 +18,7 @@ unsigned char* buildsertable(int start_pos)
 	char* newtbl = (char*)malloc(serialen+ 1);
 	memset(newtbl, 0, serialen + 1);
 	for (int i = 0; i < serialen; i++)
-	{
-		if (posit >= serialen)posit = 0;
-		newtbl[i] = validchar_tbl[posit];
-		posit = posit + 1 % serialen;
-	}
+		newtbl[i] = validchar_tbl[posit++ % serialen];
 	return newtbl;
 }
 
