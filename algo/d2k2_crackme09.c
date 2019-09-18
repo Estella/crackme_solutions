@@ -29,8 +29,8 @@ void process_serial(char* name, char* serial_out)
 {
 	int seriallen = strlen(name);
 	char* key = (char*)malloc(seriallen + 1);
-	char* serialz = (char*)malloc(seriallen + 1);
-	memset(serialz, 0, seriallen + 1);
+	char* ciphertext = (char*)malloc(seriallen + 1);
+	memset(ciphertext, 0, seriallen + 1);
 	memset(key, 0, seriallen + 1);
 
 	int shlvar = seriallen << 2;
@@ -57,13 +57,13 @@ void process_serial(char* name, char* serial_out)
 	for (int i = 0; i < seriallen; i++)
 	{
 		int offset = findcharintab(subtable1,key[i]);
-		unsigned char* shitstring = buildsertable(offset,subtable1);
+		unsigned char* ciphertable = buildsertable(offset,subtable1);
 		int offset2 = findcharintab(subtable1, name[i]);
-		serialz[i] = shitstring[offset2];
-		free(shitstring);
+		ciphertext[i] = ciphertable[offset2];
+		free(ciphertable);
 	}
 	free(subtable1);
 	free(key);
-	wsprintf(serial_out, "%s", serialz);
-	free(serialz);
+	wsprintf(serial_out, "%s", ciphertext);
+	free(ciphertext);
 }
