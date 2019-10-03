@@ -31,15 +31,13 @@ void process_serial(char* name, char* serial_out)
 	char* ciphertext = (char*)malloc(seriallen + 1);
 	memset(ciphertext, 0, seriallen + 1);
 
-	int shlvar = seriallen << 2;
-	if (shlvar >= 0x3C)shlvar = 0x1E;
+	int shlvar = (seriallen << 2) >= 0x3C? 0x1E: seriallen << 2;
 	unsigned char* subtable1 = buildsertable(shlvar,validchar_tbl);
 	int subtbl1len = strlen(subtable1);
 
 	uint8_t AL=0;
 	uint8_t DL= 0;
-	DL = name[0];
-	DL = _rotl8(DL, 3);
+	DL = _rotl8(name[0],3);
 	for (int i = 0; ; i++)
 	{
 		int j = i + 1;
