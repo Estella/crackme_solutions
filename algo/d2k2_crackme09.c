@@ -28,10 +28,8 @@ unsigned findcharintab(char* table,int let)
 void process_serial(char* name, char* serial_out)
 {
 	int seriallen = strlen(name);
-	char* key = (char*)malloc(seriallen + 1);
 	char* ciphertext = (char*)malloc(seriallen + 1);
 	memset(ciphertext, 0, seriallen + 1);
-	memset(key, 0, seriallen + 1);
 
 	int shlvar = seriallen << 2;
 	if (shlvar >= 0x3C)shlvar = 0x1E;
@@ -50,20 +48,12 @@ void process_serial(char* name, char* serial_out)
 		AL += DL;
 		DL += AL;
 		AL = subtable1[AL % subtbl1len];
-		key[i] = AL;
+		unsigned char* ciphertable = buildsertable(findcharintab(subtable1, AL), subtable1);
+		ciphertext[i] = ciphertable[findcharintab(subtable1, name[i])];
+		free(ciphertable);
 		if (j == seriallen)break;
 	}
-
-	for (int i = 0; i < seriallen; i++)
-	{
-		int offset = findcharintab(subtable1,key[i]);
-		unsigned char* ciphertable = buildsertable(offset,subtable1);
-		int offset2 = findcharintab(subtable1, name[i]);
-		ciphertext[i] = ciphertable[offset2];
-		free(ciphertable);
-	}
 	free(subtable1);
-	free(key);
 	wsprintf(serial_out, "%s", ciphertext);
 	free(ciphertext);
 }
