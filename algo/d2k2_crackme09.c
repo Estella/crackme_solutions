@@ -21,8 +21,7 @@ void process_serial(char* name, char* serial_out)
 	{
 		unsigned char ciphertable[validchar_tbllen] = { 0 };
 		int j = i + 1;
-		AL = name[i] ^ name[j];
-		AL += DL;
+		AL = (name[i] ^ name[j]) + DL;
 		DL += AL;
 		AL = subtable1[AL % validchar_tbllen];
 		int offset = 0;
