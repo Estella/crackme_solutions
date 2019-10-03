@@ -15,15 +15,13 @@ void process_serial(char* name, char* serial_out)
 	unsigned char subtable1[validchar_tbllen] = { 0 };
 	for (int i = 0; i < validchar_tbllen;i++)
 		subtable1[i] = validchar_tbl[(shlvar++ % validchar_tbllen)];
-	uint8_t AL=0;
-	uint8_t DL= 0;
+	uint8_t AL=0,DL= 0;
 	DL = _rotl8(name[0],3);
 	for (int i = 0; ; i++)
 	{
 		unsigned char ciphertable[validchar_tbllen] = { 0 };
 		int j = i + 1;
-		AL = name[i];
-		AL ^= name[j];
+		AL = name[i] ^ name[j];
 		AL += DL;
 		DL += AL;
 		AL = subtable1[AL % validchar_tbllen];
