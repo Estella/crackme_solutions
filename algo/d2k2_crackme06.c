@@ -27,7 +27,7 @@ char base36enc(int num)
 
 void process_serial(char *name, char *serial_out)
 {
-	Register EB, EC, EA, ED;
+	Register EB, EC, EA;
 	unsigned char havalbuf1[BUFFER_SIZE] = { 0 };
 	unsigned char havalbuf2[BUFFER_SIZE] = { 0 };
 	char d2k2_testtable[0x130] = { 0 };
@@ -43,7 +43,6 @@ void process_serial(char *name, char *serial_out)
 
 	EC.ex = 0;
 	EB.ex = 0;
-	ED.ex = namelen;
 	EA.ex = namelen;
 	//first portion
 
@@ -51,14 +50,10 @@ void process_serial(char *name, char *serial_out)
 	{
 		BYTE* d2k2_unk1hashptr = havalbuf1;
 		d2k2_crackme06_unknown128bhash(inputbuf1, namelen, havalbuf1);
-		EB.b.lo = inputbuf1[i];
-		EB.b.lo += i;
-		EB.b.lo ^= namelen;
+		EB.b.lo = (inputbuf1[i] + i) ^namelen;
 		havalbuf1[i] += EB.b.lo;
-		EA.ex = *(DWORD*)(d2k2_unk1hashptr + 0x05);
 		EB.ex = *(DWORD*)(d2k2_unk1hashptr + 0x04);
-		EA.ex = EA.ex + EB.ex + 0x2004;
-		EA.ex = i + EA.ex + 0x4064C7;
+		EA.ex = (*(DWORD*)(d2k2_unk1hashptr + 0x05) + EB.ex + 0x2004) + i + 0x4064C7;
 		d2k2_magic1 = EA.ex;
 		EB.b.lo ^= EA.b.lo;
 		inputbuf1[i] += EB.b.lo;
@@ -72,10 +67,8 @@ void process_serial(char *name, char *serial_out)
 	for (int i = 0; i < 0x10; i++)
 	{
 
-		EB.ex = (int8_t)havalbuf1[i];
-		ED.ex = (int8_t)havalbuf2[i];
-		EB.ex += d2k2_magic1;
-		EB.ex ^= ED.ex;
+		EB.ex = (int8_t)havalbuf1[i] + d2k2_magic1;
+		EB.ex ^= (int8_t)havalbuf2[i];
 		EB.ex = (EB.ex * 4) + 0x1024;
 		*(DWORD*)(d2k2_testtblptr++) = EB.ex;
 		EB.ex += d2k2_magicarray[0];

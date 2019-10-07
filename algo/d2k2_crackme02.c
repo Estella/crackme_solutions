@@ -24,10 +24,7 @@ void process_serial(char *name, char *serial_out)
 
     for (int i=0;i!=0x10;i++)
 		magic_dword += tabl[i];
-
-	magic_dword *= (namelen * 0xFF);
-	magic_dword ^= 0xACEBDFAB;
-	magic_dword = _byteswap_ulong(magic_dword);
+	magic_dword = _byteswap_ulong((magic_dword * (namelen * 0xFF)) ^ 0xACEBDFAB);
 	wsprintf((char*)magic_buf,"%1X", magic_dword);
 
 	for (int i = 0; i < 8 ; i++)

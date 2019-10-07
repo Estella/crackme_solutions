@@ -19,23 +19,17 @@ void process_serial(char *name, char *serial_out)
 	{
 		BYTE *hashbuf_ptr_b = (BYTE*)d2k2_hashout;
 		int magic1 = ((((DWORD)0x10101010 & 0xFFFFFF00) | (DWORD)hashinp[ctr] & 0xFF) << 5) * namelen;
-		int magic2 = (0x68F6B76C * namelen) ^ magic1;
-		magic2 += *(DWORD *)hashinp;
+		int magic2 = ((0x68F6B76C * namelen) ^ magic1) + *(DWORD*)hashinp;
 		*(DWORD *)hashinp = magic2;
 		d2k2_crackme05_hash(hashinp, namelen, d2k2_hashout);
 		hashbuf_ptr_b += 6;
-		magic1 = *(DWORD*)hashbuf_ptr_b;
-		magic2 ^= magic1;
-		magic2 = _rotl(magic2, 7);
+		magic2 = _rotl(magic2 ^ (*(DWORD*)hashbuf_ptr_b), 7);
 		hashbuf_ptr_b += 2;
-		magic1 = *(DWORD*)hashbuf_ptr_b;
-		magic2 ^= magic1;
+		magic2 ^= (*(DWORD*)hashbuf_ptr_b);
 		hashinp[ctr] = LOBYTE(magic2);
 		d2k2_crackme05_hash(hashinp, namelen, d2k2_hashout);
 		hashbuf_ptr_b += 2;
-		magic1 = *(DWORD*)hashbuf_ptr_b;
-		magic2 ^= magic1;
-		magic2 = _rotl(magic2, 4);
+		magic2 = _rotl(magic2^ (*(DWORD*)hashbuf_ptr_b), 4);
 		hashinp[ctr] = LOBYTE(magic2);
 		d2k2_crackme05_hash(hashinp, namelen, d2k2_hashout);
 	}
@@ -50,10 +44,8 @@ void process_serial(char *name, char *serial_out)
 	int edx = 9;
 	for (int i = 0; i < 0x20; i++)
 	{
-		ebx = ((DWORD)ebx & 0xFFFFFF00) | (DWORD)d2k2hash_formatted[i] & 0xFF;
-		ebx = _rotl(ebx, 0x10);
-		ebx = _byteswap_ulong(ebx) + 0x1A2B3C4D;
-		ebx = _byteswap_ulong(ebx) ^ edx;
+		ebx = _rotl(((DWORD)ebx & 0xFFFFFF00) | (DWORD)d2k2hash_formatted[i] & 0xFF,0x10);
+		ebx = _byteswap_ulong(_byteswap_ulong(ebx) + 0x1A2B3C4D) ^ edx;
 		int eax = ebx;
 		edx = (eax >= 0) ? 0 : 0xFFFFFFFF;
 		ebx = 0x19;

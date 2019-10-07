@@ -13,7 +13,7 @@
     <ClCompile Include="algo\bignum\bignum.c">
       <Filter>Algorithm\bn</Filter>
     </ClCompile>
-    <ClCompile Include="algo\d2k2_crackme09.c">
+    <ClCompile Include="algo\d2k2_crackme08.c">
       <Filter>Algorithm</Filter>
     </ClCompile>
   </ItemGroup>
@@ -31,5 +31,10 @@
     <ClInclude Include="algo\bignum\bignum.h">
       <Filter>Algorithm\bn</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <MASM Include="algo\d2k2_crackme08_hash.asm">
+      <Filter>Algorithm</Filter>
+    </MASM>
   </ItemGroup>
 </Project>
