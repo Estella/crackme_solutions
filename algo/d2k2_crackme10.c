@@ -18,8 +18,11 @@ void MD5(BYTE * data, ULONG len, BYTE* hash_data)
 void process_serial(char *name, char *serial_out)
 {
 	BYTE md5_hash[16] = { 0 };
-	int namelen = lstrlen(name);
-	MD5((BYTE*)name, namelen, (BYTE*)md5_hash);
+	unsigned char name2[50] = { 0 };
+	strcpy(name2, name);
+	strcat(name2, "-diablo2oo2");
+	int namelen = lstrlen(name2);
+	MD5((BYTE*)name2, namelen, (BYTE*)md5_hash);
 	wsprintf(serial_out, "test");
 }
 
